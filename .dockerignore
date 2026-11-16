@@ -1,0 +1,11 @@
+.git
+.venv
+.tools
+.claude
+data
+uploads
+__pycache__
+*.pyc
+*.mp4
+*.mov
+README.fr.local.md

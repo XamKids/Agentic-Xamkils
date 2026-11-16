@@ -1,11 +1,13 @@
 """Interface web (Flask) : espace élève et espace enseignant."""
 from __future__ import annotations
 
+import hmac
 import html
+import os
 import re
 import secrets
 
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, request, session, url_for
 from markupsafe import Markup
 
 from ..config import CURRENT_TERM, CURRENT_YEAR, DATA_DIR, RECORDS_DB
@@ -139,5 +141,25 @@ def create_app() -> Flask:
     @app.get("/")
     def landing():
         return redirect(url_for("teacher.dashboard"))
+
+    # Mise en ligne : un code d'accès protège toute la plateforme (variable XAMKIDS_ACCESS_CODE).
+    # Sans cette variable (installation dans une école, sur un poste local), rien ne change.
+    access_code = os.environ.get("XAMKIDS_ACCESS_CODE", "")
+    if access_code:
+        @app.before_request
+        def require_access():
+            if session.get("access_ok") or request.endpoint in ("access", "static"):
+                return None
+            return redirect(url_for("access"))
+
+        @app.route("/acces", methods=["GET", "POST"])
+        def access():
+            wrong = False
+            if request.method == "POST":
+                if hmac.compare_digest(request.form.get("code", "").strip().encode(), access_code.encode()):
+                    session["access_ok"] = True
+                    return redirect(url_for("landing"))
+                wrong = True
+            return render_template("access.html", wrong=wrong), (401 if wrong else 200)
 
     return app

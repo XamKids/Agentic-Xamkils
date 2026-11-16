@@ -33,10 +33,15 @@ def _catalog() -> dict[str, str]:
     return EN
 
 
+_HOSTED = bool(os.environ.get("XAMKIDS_LLM_API_URL"))
+
+
 def tr(text: str, **fields) -> str:
     """Phrase dans la langue de la plateforme. Les {champs} ne sont remplacés que si des valeurs sont données."""
     if LANG == "en" and text:
         text = _catalog().get(text, text)
+    if _HOSTED and text:  # démonstration en ligne : le modèle n'est pas sur la machine, l'interface le dit
+        text = text.replace("modèle local", "modèle hébergé").replace("local model", "hosted model")
     return text.format(**fields) if fields else text
 
 

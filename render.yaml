@@ -1,0 +1,18 @@
+# Render blueprint: one web service built from the Dockerfile.
+services:
+  - type: web
+    name: xamkids-profile
+    runtime: docker
+    plan: starter
+    healthCheckPath: /acces
+    envVars:
+      - key: XAMKIDS_ACCESS_CODE      # code asked at the entrance of the platform
+        sync: false
+      - key: XAMKIDS_LLM_API_URL
+        value: https://openrouter.ai/api/v1
+      - key: XAMKIDS_LLM_API_KEY      # your OpenRouter key, never committed
+        sync: false
+      - key: XAMKIDS_LLM
+        value: meta-llama/llama-3.1-8b-instruct
+      - key: XAMKIDS_VLM
+        value: qwen/qwen-2.5-vl-7b-instruct
