@@ -1,0 +1,26 @@
+<!doctype html>
+{% import "_icons.html" as ic %}
+<html lang="{{ 'en' if LANG == 'en' else 'fr' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}XamKids Profile{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='5.5' fill='%23145C3E'/><g fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' transform='translate(2.4 2.6) scale(.8)'><path d='M12 8.2C9.8 6.6 6.9 6.2 4 6.8v10.6c2.9-.6 5.8-.2 8 1.4 2.2-1.6 5.1-2 8-1.4V6.8c-2.9-.6-5.8-.2-8 1.4z'/><path d='M12 8.2v10.6'/></g></svg>">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="{{ url_for('landing') }}">{{ ic.logo() }} XamKids Profile</a>
+      <nav class="switch">
+        <a href="{{ url_for('learner.choose') }}" class="{{ 'on' if request.blueprint == 'learner' }}">{{ _("Élève") }}</a>
+        <a href="{{ url_for('teacher.dashboard') }}" class="{{ 'on' if request.blueprint == 'teacher' }}">{{ _("Enseignant·e") }}</a>
+      </nav>
+    </div>
+  </header>
+  {% block body %}{% endblock %}
+  <script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	plan(plan)
+	read_document(read_document)
+	propose(propose)
+	wait_approval(wait_approval)
+	wait_results(wait_results)
+	record(record)
+	ask_teacher(ask_teacher)
+	finish(finish)
+	analyze(analyze)
+	retrieve(retrieve)
+	trends(trends)
+	crosscheck(crosscheck)
+	monitor(monitor)
+	reason(reason)
+	summarize(summarize)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> plan;
+	analyze -.-> crosscheck;
+	analyze -.-> finish;
+	analyze -.-> monitor;
+	analyze -.-> read_document;
+	analyze -.-> reason;
+	analyze -.-> retrieve;
+	analyze -.-> summarize;
+	analyze -.-> trends;
+	ask_teacher --> finish;
+	crosscheck -.-> analyze;
+	crosscheck -.-> finish;
+	crosscheck -.-> monitor;
+	crosscheck -.-> read_document;
+	crosscheck -.-> reason;
+	crosscheck -.-> retrieve;
+	crosscheck -.-> summarize;
+	crosscheck -.-> trends;
+	monitor -.-> analyze;
+	monitor -.-> crosscheck;
+	monitor -.-> finish;
+	monitor -.-> read_document;
+	monitor -.-> reason;
+	monitor -.-> retrieve;
+	monitor -.-> summarize;
+	monitor -.-> trends;
+	plan -.-> analyze;
+	plan -.-> crosscheck;
+	plan -.-> finish;
+	plan -.-> monitor;
+	plan -.-> read_document;
+	plan -.-> reason;
+	plan -.-> retrieve;
+	plan -.-> summarize;
+	plan -.-> trends;
+	propose --> wait_approval;
+	read_document --> finish;
+	reason -.-> ask_teacher;
+	reason -.-> finish;
+	reason -.-> propose;
+	reason -.-> record;
+	record --> finish;
+	retrieve -.-> analyze;
+	retrieve -.-> crosscheck;
+	retrieve -.-> finish;
+	retrieve -.-> monitor;
+	retrieve -.-> read_document;
+	retrieve -.-> reason;
+	retrieve -.-> summarize;
+	retrieve -.-> trends;
+	summarize --> finish;
+	trends -.-> analyze;
+	trends -.-> crosscheck;
+	trends -.-> finish;
+	trends -.-> monitor;
+	trends -.-> read_document;
+	trends -.-> reason;
+	trends -.-> retrieve;
+	trends -.-> summarize;
+	wait_approval -.-> finish;
+	wait_approval -.-> wait_results;
+	wait_results --> plan;
+	finish --> __end__;
+	analyze -.-> analyze;
+	crosscheck -.-> crosscheck;
+	monitor -.-> monitor;
+	retrieve -.-> retrieve;
+	trends -.-> trends;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

@@ -1,0 +1,60 @@
+{% extends "teacher/layout.html" %}
+{% block content %}
+<div class="page-head"><div><h1>{{ _("À valider") }}</h1></div></div>
+<details style="margin:-8px 0 18px"><summary>{{ _("Comment lire ces exercices ?") }}</summary>
+    <p class="small muted" style="margin-top:6px">{{ _("<b>Cible</b> : teste l'hypothèse ; chaque mauvais choix correspond à un type d'erreur.
+      <b>Contraste</b> : une compétence voisine ; réussie, elle montre que la difficulté est bien localisée.
+      <b>Écouté</b> : le même type d'exercice, texte lu à l'élève ; s'il réussit ainsi et échoue seul, la difficulté vient de la lecture.
+      <b>En prenant son temps</b> : le même type, réponses affichées après quelques secondes ; s'il réussit ainsi, il répondait trop vite.
+      Si le contraste échoue aussi, l'agent vous pose la question au lieu de conclure.") }}</p></details>
+{% for thread_id, exs in groups.items() %}
+  {% set target = exs | rejectattr('probe', 'in', ['contrast', 'listened', 'slowed']) | first %}
+  {% set h = exs[0].hypothesis | hypothesis %}
+  <form class="card finding" style="margin-bottom:12px" method="post" action="{{ url_for('teacher.review_exercises', thread_id=thread_id) }}">
+    <div style="display:flex;justify-content:space-between;gap:20px;align-items:flex-start">
+      <div style="min-width:0">
+        <div class="head" style="margin-bottom:6px"><b style="font-size:1rem">{{ names.get(exs[0].target_learner_id) }}</b>
+          <span class="small muted">{{ (target or exs[0]).skill | domain }}</span></div>
+        <p style="margin:0">{{ plain[thread_id].noticed }}</p>
+        <p style="margin:4px 0 0">{{ plain[thread_id].proposal }}</p>
+      </div>
+      <div style="display:flex;gap:6px;flex:none">
+        <button class="btn primary small" name="decision" value="approve">{{ _("Valider") }}</button>
+        <button class="btn danger small" name="decision" value="reject">{{ _("Refuser") }}</button>
+      </div>
+    </div>
+    <div class="toggles">
+      <button type="button" data-open="ex-{{ loop.index }}">{{ _("{n} exercices proposés", n=exs | length) }}</button>
+      <button type="button" data-open="co-{{ loop.index }}">{{ _("Ajouter un commentaire") }}</button>
+    </div>
+    <div class="panel" id="ex-{{ loop.index }}" hidden>
+      <ol style="padding-left:20px;margin:0">
+        {% for e in exs %}
+        <li style="margin-bottom:12px"><span class="badge">{{ {'contrast': tr('Contraste'), 'listened': tr('Écouté'), 'slowed': tr('En prenant son temps')}.get(e.probe, tr('Cible')) }}</span>
+          {{ e.prompt | prompt }}<br>
+          {% for c in e.choices %}
+            {% if c == e.answer %}<span class="badge" style="border-color:var(--st-strength);color:var(--st-strength)">{{ _("{c} · bonne réponse", c=c) }}</span>
+            {% else %}<span class="badge" title="{{ ERROR_TAXONOMY.get(e.error_map.get(c), '') }}">{{ c }}</span>{% endif %}
+          {% endfor %}
+        </li>
+        {% endfor %}
+      </ol></div>
+    <div class="panel" id="co-{{ loop.index }}" hidden><input type="text" name="comment" placeholder="{{ _("Votre commentaire…") }}" style="width:100%"></div>
+  </form>
+{% endfor %}
+{% for s in summaries %}
+  <form class="card finding" method="post" action="{{ url_for('teacher.review_summary', summary_id=s.id) }}">
+    <div class="head"><b>{{ names.get(s.learner_id) }}</b><span class="st watch">{{ _("Résumé pour la famille") }}</span></div>
+    <p class="small muted">{{ _("Relisez et modifiez librement. Une fois validé, c'est vous qui le partagez avec la famille.") }}</p>
+    <textarea name="text" rows="9">{{ s.text }}</textarea>
+    <div class="actions"><button class="btn primary" name="decision" value="approve">{{ _("Valider") }}</button>
+      <button class="btn danger" name="decision" value="reject">{{ _("Refuser") }}</button></div>
+  </form>
+{% endfor %}
+{% if not groups and not summaries %}<p class="empty">{{ _("Rien à valider pour l'instant.") }}</p>{% endif %}
+{% if approved %}
+<div class="section-title"><h2>{{ _("Résumés validés, prêts à partager") }}</h2></div>
+{% for s in approved %}<p>{{ _("{name} · validé par {who} le {date} ·", name=names.get(s.learner_id, ''), who=s.reviewed_by, date=s.reviewed_at | day) }}
+  <a href="{{ url_for('teacher.download_summary', summary_id=s.id) }}">{{ _("télécharger") }}</a></p>{% endfor %}
+{% endif %}
+{% endblock %}

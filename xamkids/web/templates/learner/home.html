@@ -1,0 +1,40 @@
+{% extends "learner/base.html" %}
+{% import "_icons.html" as ic %}
+{% block title %}{{ _("Bonjour {name} · XamKids", name=l.first_name) }}{% endblock %}
+{% block content %}
+{% set day = activities[0] %}
+<div class="hello-row"><div>
+<h1 class="kid-title">{{ _("Bonjour {name} !", name=l.first_name) }}</h1>
+<p class="muted" style="margin:0">{{ _n(progress.sessions, "{n} séance ce trimestre", "{n} séances ce trimestre") }} · {{ _n(progress.stars, "{n} étoile d'effort", "{n} étoiles d'effort") }}</p>
+</div>{{ ic.sprout() }}</div>
+
+<form class="today" method="post" action="{{ url_for('learner.start', lid=l.id) }}">
+  <div style="flex:1"><h2>{{ day[2] }}</h2><p>{{ day[3] }}</p></div>
+  <input type="hidden" name="sujet" value="{{ day[0] }}">
+  <button class="btn primary big">{{ _("C'est parti !") }}</button>
+</form>
+
+<p class="or">{{ _("ou choisis une matière") }}</p>
+<div class="subjects">
+  {% for subject, icon, title, desc, css in activities[1:] %}
+  <form method="post" action="{{ url_for('learner.start', lid=l.id) }}">
+    <input type="hidden" name="sujet" value="{{ subject }}">
+    <button class="subject"><span class="glyph">{{ icon }}</span><span><b>{{ title }}</b><small>{{ desc }}</small></span></button>
+  </form>
+  {% endfor %}
+</div>
+
+<div class="more">
+  <details>
+    <summary>{{ _("Ce que j'aime") }}</summary>
+    <form method="post" action="{{ url_for('learner.save_interests', lid=l.id) }}" style="margin-top:14px">
+      <div class="chips">
+        {% for i in interests %}
+        <label class="chip"><input type="checkbox" name="interest" value="{{ i }}" {{ 'checked' if i in mine }}><span>{{ i }}</span></label>
+        {% endfor %}
+      </div>
+      <p><button class="btn primary" style="margin-top:14px">{{ _("Enregistrer") }}</button></p>
+    </form>
+  </details>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "teacher/layout.html" %}
+{% block content %}
+<div class="page-head"><div><h1>{{ _("Journal d'audit") }}</h1>
+  <p>{{ _("Chaque appel d'outil, calcul et décision humaine, horodaté.") }}</p></div>
+  <form method="get" style="display:flex;gap:8px;align-items:center">
+    {% for key, label in [('actor', tr('Qui')), ('server', tr('Serveur')), ('status', tr('Statut'))] %}
+    <select name="{{ key }}" onchange="this.form.submit()" style="width:auto">
+      <option value="">{{ _("{label} : tous", label=label) }}</option>
+      {% for o in options[key] %}<option value="{{ o }}" {{ 'selected' if filters[key] == o }}>{{ tr(o) }}</option>{% endfor %}
+    </select>
+    {% endfor %}
+  </form>
+</div>
+{% if selected %}
+<div class="card" style="margin-bottom:20px"><div class="head" style="display:flex;justify-content:space-between">
+  <b>{{ selected.action }}</b><a class="small" href="{{ url_for('teacher.audit_log', **filters) }}">{{ _("Fermer") }}</a></div>
+  <p class="small muted">{{ _("Entrées") }}</p><pre>{{ selected.inputs }}</pre><p class="small muted">{{ _("Sorties") }}</p><pre>{{ selected.outputs }}</pre></div>
+{% endif %}
+<div class="card"><table class="data">
+  <tr><th style="width:120px">{{ _("Quand") }}</th><th>{{ _("Action") }}</th><th>{{ _("Élève") }}</th><th style="width:110px">{{ _("Statut") }}</th></tr>
+  {% for e in entries %}
+  <tr>
+    <td class="small muted">{{ e.ts[8:10] }}/{{ e.ts[5:7] }} {{ e.ts[11:16] }}</td>
+    <td><a href="{{ url_for('teacher.audit_log', id=e.id, **filters) }}" style="color:var(--ink)">{{ e.action }}</a>
+      <span class="small muted"> · {{ e.server if e.actor == 'agent' else tr(e.actor) }}</span></td>
+    <td class="small">{{ names.get(e.learner_id, '') }}</td>
+    <td>{% if e.status in ('refused', 'error') %}<span class="st bad">{{ tr('Refusé') if e.status == 'refused' else tr('Erreur') }}</span>
+        {% else %}<span class="small muted">ok</span>{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table></div>
+{% endblock %}

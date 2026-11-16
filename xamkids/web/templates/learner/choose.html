@@ -1,0 +1,8 @@
+{% extends "learner/base.html" %}
+{% block content %}
+<h1 class="kid-title">{{ _("Qui es-tu ?") }}</h1>
+<p class="muted" style="margin:0 0 24px">{{ _("Touche ton prénom.") }}</p>
+<div class="names">
+  {% for l in learners %}<a href="{{ url_for('learner.code', lid=l.id) }}"><span class="initials">{{ l | initials }}</span>{{ l.first_name }}</a>{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block body_class %}pro{% endblock %}
+{% block body %}
+<div class="teacher-layout">
+  <aside class="side">
+    <div class="cls"><b>{{ cls.name }}</b><br><span class="small muted">{{ teacher.name }}<br>{{ _("{year} · trimestre {term}", year=CURRENT_YEAR, term=CURRENT_TERM) }}</span></div>
+    {% set groups = [
+      (tr('Classe'), [('teacher.dashboard', tr('Vue d\'ensemble'), 0)]),
+      (tr('À traiter'), [('teacher.alerts', tr('Alertes'), n_alerts), ('teacher.approvals', tr('À valider'), n_pending)]),
+      (tr('Données'), [('teacher.documents', tr('Documents'), 0)]),
+      (tr('Agent'), [('teacher.runs', tr('Raisonnement'), 0), ('teacher.audit_log', tr('Journal d\'audit'), 0)]),
+    ] %}
+    {% for group, items in groups %}
+      <div class="group">{{ group }}</div>
+      {% for endpoint, label, count in items %}
+        <a class="nav {{ 'on' if request.endpoint == endpoint or (endpoint == 'teacher.dashboard' and request.endpoint == 'teacher.profile') }}"
+           href="{{ url_for(endpoint) }}">{{ label }}{% if count %}<span class="count hot">{{ count }}</span>
+           {% elif endpoint == 'teacher.alerts' and n_news %}<span class="count">{{ n_news }}</span>{% endif %}</a>
+      {% endfor %}
+    {% endfor %}
+  </aside>
+  <main class="main">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="flash {{ 'warn' if category == 'warn' }}">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<div id="jobs" class="jobs" data-running="{{ '1' if running_jobs else '0' }}" data-url="{{ url_for('teacher.api_jobs') }}">
+  {% for j in running_jobs %}<div class="card small"><b>{{ j.label }}</b><br>{{ _("En cours…") }}</div>{% endfor %}
+</div>
+{% endblock %}

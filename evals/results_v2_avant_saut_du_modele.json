@@ -1,0 +1,629 @@
+{
+  "model": "llama3.1:8b",
+  "runs": 3,
+  "results": [
+    {
+      "learner": "Awa",
+      "expected_options": [
+        "probleme_multi_etapes:locale"
+      ],
+      "expected_contradictions": [],
+      "options_available": [
+        "probleme_multi_etapes:locale",
+        "probleme_multi_etapes:lecture"
+      ],
+      "rules": "probleme_multi_etapes:locale",
+      "model_runs": [
+        {
+          "option": "probleme_multi_etapes:locale",
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "action inconnue « proposer_exercices ». Décision retenue : propose_exercises — 4 trimestres faibles consécutifs en problèmes à plusieurs étapes, erreur dominante « S'arrête après une étape intermédiaire d'un problème à plusieurs étapes » (86 % des erreurs). Piste : la difficulté porte sur la compétence elle-même (test : contraste en problèmes à une étape). Une hypothèse, pas un constat : je la tes",
+          "cited_observations": [
+            4,
+            3,
+            2
+          ],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 4 : 0 % en probleme_multi_etapes, ce n'est pas nettement bon",
+            "observation 4 : 0 % en probleme_multi_etapes, ce n'est pas nettement bon"
+          ],
+          "seconds_decision": 12.5,
+          "seconds_contradictions": 7.2
+        },
+        {
+          "option": "probleme_multi_etapes:locale",
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "action inconnue « proposer_exercices ». Décision retenue : propose_exercises — 4 trimestres faibles consécutifs en problèmes à plusieurs étapes, erreur dominante « S'arrête après une étape intermédiaire d'un problème à plusieurs étapes » (86 % des erreurs). Piste : la difficulté porte sur la compétence elle-même (test : contraste en problèmes à une étape). Une hypothèse, pas un constat : je la tes",
+          "cited_observations": [
+            4,
+            3,
+            2
+          ],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 4 : 0 % en probleme_multi_etapes, ce n'est pas nettement bon",
+            "observation 3 : 17 % en probleme_multi_etapes, ce n'est pas nettement bon",
+            "observation 4 : 67 % en calcul, ce n'est pas faible",
+            "observation 3 : 67 % en calcul, ce n'est pas faible",
+            "observation 4 : elle ne parle pas de « numeration »",
+            "observation 3 : elle ne parle pas de « numeration »"
+          ],
+          "seconds_decision": 8.3,
+          "seconds_contradictions": 21.0
+        },
+        {
+          "option": "probleme_multi_etapes:locale",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "Les observations des enseignants suggèrent que Awa a des difficultés à résoudre des problèmes longs, alors qu'elle maîtrise les opérations individuelles. Les faits sur la compétence « problème multi-étapes » montrent une tendance faible durable et une sévérité élevée.",
+          "cited_observations": [
+            4,
+            3
+          ],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 4 : 0 % en probleme_multi_etapes, ce n'est pas nettement bon",
+            "observation 4 : 0 % en probleme_multi_etapes, ce n'est pas nettement bon",
+            "observation 3 : 17 % en probleme_multi_etapes, ce n'est pas nettement bon",
+            "observation 3 : 83 % en probleme_simple, ce n'est pas faible",
+            "observation 4 : 100 % en probleme_simple, ce n'est pas faible",
+            "observation 3 : 83 % en probleme_simple, ce n'est pas faible",
+            "observation 4 : 67 % en calcul, ce n'est pas faible",
+            "observation 3 : 67 % en calcul, ce n'est pas faible",
+            "observation 4 : elle ne parle pas de « comprehension »",
+            "observation 3 : elle ne parle pas de « comprehension »",
+            "observation 4 : elle ne parle pas de « decodage »",
+            "observation 3 : elle ne parle pas de « decodage »",
+            "observation 4 : elle ne parle pas de « grammaire »",
+            "observation 3 : elle ne parle pas de « grammaire »",
+            "observation 4 : elle ne parle pas de « numeration »",
+            "observation 3 : elle ne parle pas de « numeration »"
+          ],
+          "seconds_decision": 10.5,
+          "seconds_contradictions": 93.4
+        }
+      ]
+    },
+    {
+      "learner": "Moussa",
+      "expected_options": [
+        "decodage:locale",
+        "probleme_multi_etapes:lecture"
+      ],
+      "expected_contradictions": [],
+      "options_available": [
+        "decodage:locale",
+        "probleme_multi_etapes:locale",
+        "probleme_multi_etapes:lecture",
+        "grammaire:locale"
+      ],
+      "rules": "decodage:locale",
+      "model_runs": [
+        {
+          "option": "decodage:locale",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "Les observations des enseignants indiquent que Moussa a des difficultés à déchiffrer les mots, notamment en fin de CI (observation 5) et qu'il écrit lentement (observation 9). Les exercices ciblés sur la compétence de décodage montrent également des difficultés persistantes (piste decodage:locale).",
+          "cited_observations": [
+            9,
+            6
+          ],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 9 : elle ne parle pas de « decodage »"
+          ],
+          "seconds_decision": 13.6,
+          "seconds_contradictions": 6.1
+        },
+        {
+          "option": "decodage:locale",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "Les exercices ciblés sur le décodage montrent que Moussa a des difficultés avec l'inversion de lettres, ce qui est confirmé par les observations des enseignants qui mentionnent qu'il confond parfois les lettres b et d.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 9 : elle ne parle pas de « decodage »"
+          ],
+          "seconds_decision": 23.8,
+          "seconds_contradictions": 5.2
+        },
+        {
+          "option": "probleme_multi_etapes:lecture",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "Les observations des enseignants suggèrent que Moussa a des difficultés de lecture, ce qui pourrait expliquer ses difficultés à résoudre des problèmes multi-étapes. Les exercices ciblés pour tester cette hypothèse pourraient inclure des problèmes multi-étapes avec des textes lus à voix haute ou des textes avec des caractères faciles à lire. (Les règles, qui ne lisent que les chiffres, auraient cho",
+          "cited_observations": [
+            9,
+            7,
+            6
+          ],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 9 : elle ne parle pas de « decodage »"
+          ],
+          "seconds_decision": 14.0,
+          "seconds_contradictions": 5.3
+        }
+      ]
+    },
+    {
+      "learner": "Fatou",
+      "expected_options": [],
+      "expected_contradictions": [
+        "calcul"
+      ],
+      "options_available": [],
+      "rules": null,
+      "model_runs": [
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « calcul » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [
+            "calcul"
+          ],
+          "contradictions_rejected": [
+            "observation 10 : elle ne parle pas de « calcul »"
+          ],
+          "seconds_decision": 13.9,
+          "seconds_contradictions": 18.8
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « calcul » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [
+            "calcul"
+          ],
+          "contradictions_rejected": [
+            "observation 10 : elle ne parle pas de « calcul »"
+          ],
+          "seconds_decision": 10.8,
+          "seconds_contradictions": 16.0
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « calcul » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [
+            "calcul"
+          ],
+          "contradictions_rejected": [
+            "observation 11 : elle ne parle pas de « comprehension »",
+            "observation 11 : elle ne parle pas de « comprehension »",
+            "observation 11 : elle ne parle pas de « decodage »",
+            "observation 11 : elle ne parle pas de « decodage »",
+            "observation 11 : elle ne parle pas de « grammaire »",
+            "observation 11 : elle ne parle pas de « grammaire »",
+            "observation 11 : elle ne parle pas de « numeration »",
+            "observation 11 : elle ne parle pas de « numeration »",
+            "observation 11 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 11 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 11 : elle ne parle pas de « probleme_simple »",
+            "observation 11 : elle ne parle pas de « probleme_simple »",
+            "observation 10 : elle ne parle pas de « calcul »",
+            "observation 10 : elle ne parle pas de « comprehension »",
+            "observation 10 : elle ne parle pas de « decodage »",
+            "observation 10 : elle ne parle pas de « decodage »",
+            "observation 10 : elle ne parle pas de « grammaire »",
+            "observation 10 : elle ne parle pas de « grammaire »",
+            "observation 10 : elle ne parle pas de « numeration »",
+            "observation 10 : elle ne parle pas de « numeration »",
+            "observation 10 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 10 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 10 : elle ne parle pas de « probleme_simple »",
+            "observation 10 : elle ne parle pas de « probleme_simple »"
+          ],
+          "seconds_decision": 11.7,
+          "seconds_contradictions": 143.2
+        }
+      ]
+    },
+    {
+      "learner": "Ibrahima",
+      "expected_options": [],
+      "expected_contradictions": [],
+      "options_available": [],
+      "rules": null,
+      "model_runs": [
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 13 : elle ne parle pas de « decodage »",
+            "observation 13 : elle ne parle pas de « grammaire »",
+            "observation 13 : elle ne parle pas de « numeration »",
+            "observation 13 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 13 : elle ne parle pas de « probleme_simple »",
+            "observation 12 : elle ne parle pas de « calcul »",
+            "observation 12 : elle ne parle pas de « comprehension »",
+            "observation 12 : elle ne parle pas de « decodage »",
+            "observation 12 : elle ne parle pas de « grammaire »",
+            "observation 12 : elle ne parle pas de « numeration »",
+            "observation 12 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 12 : elle ne parle pas de « probleme_simple »"
+          ],
+          "seconds_decision": 18.0,
+          "seconds_contradictions": 54.2
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 13 : elle ne parle pas de « decodage »",
+            "observation 13 : elle ne parle pas de « grammaire »",
+            "observation 13 : elle ne parle pas de « numeration »",
+            "observation 13 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 13 : elle ne parle pas de « probleme_simple »",
+            "observation 12 : elle ne parle pas de « calcul »",
+            "observation 12 : elle ne parle pas de « comprehension »",
+            "observation 12 : elle ne parle pas de « decodage »",
+            "observation 12 : elle ne parle pas de « grammaire »",
+            "observation 12 : elle ne parle pas de « numeration »",
+            "observation 12 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 12 : elle ne parle pas de « probleme_simple »"
+          ],
+          "seconds_decision": 14.0,
+          "seconds_contradictions": 53.0
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 13 : elle ne parle pas de « decodage »",
+            "observation 13 : elle ne parle pas de « grammaire »",
+            "observation 13 : elle ne parle pas de « numeration »",
+            "observation 13 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 13 : elle ne parle pas de « probleme_simple »",
+            "observation 12 : elle ne parle pas de « calcul »",
+            "observation 12 : elle ne parle pas de « comprehension »",
+            "observation 12 : elle ne parle pas de « decodage »",
+            "observation 12 : elle ne parle pas de « grammaire »",
+            "observation 12 : elle ne parle pas de « numeration »",
+            "observation 12 : elle ne parle pas de « probleme_multi_etapes »",
+            "observation 12 : elle ne parle pas de « probleme_simple »"
+          ],
+          "seconds_decision": 14.4,
+          "seconds_contradictions": 52.0
+        }
+      ]
+    },
+    {
+      "learner": "Aminata",
+      "expected_options": [
+        "calcul:locale",
+        "numeration:locale"
+      ],
+      "expected_contradictions": [
+        "numeration"
+      ],
+      "options_available": [
+        "numeration:locale",
+        "calcul:locale",
+        "decodage:locale"
+      ],
+      "rules": "numeration:locale",
+      "model_runs": [
+        {
+          "option": "calcul:locale",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "Les observations des enseignants indiquent que Aminata a des difficultés avec les opérations posées et les opérations mentales en calcul. Les faits indiquent également que la difficulté est durable et que les erreurs sont fréquentes. (Les règles, qui ne lisent que les chiffres, auraient choisi la piste « numeration:locale ».)",
+          "cited_observations": [
+            15
+          ],
+          "contradictions": [
+            "numeration"
+          ],
+          "contradictions_rejected": [
+            "observation 16 : elle ne parle pas de « decodage »"
+          ],
+          "seconds_decision": 18.0,
+          "seconds_contradictions": 10.8
+        },
+        {
+          "option": "calcul:locale",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "Les observations des enseignants indiquent que Aminata a des difficultés avec les opérations posées et les opérations mentales en calcul. Les faits indiquent également que la difficulté est durable et que la sévérité est élevée (12,28). Il est donc probable que la difficulté porte sur la compétence elle-même. (Les règles, qui ne lisent que les chiffres, auraient choisi la piste « numeration:locale",
+          "cited_observations": [
+            15
+          ],
+          "contradictions": [
+            "numeration"
+          ],
+          "contradictions_rejected": [
+            "observation 16 : elle ne parle pas de « decodage »"
+          ],
+          "seconds_decision": 12.2,
+          "seconds_contradictions": 8.7
+        },
+        {
+          "option": "calcul:locale",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "Les observations des enseignants indiquent que Aminata a des difficultés avec les opérations posées et les opérations mentales en calcul. Les faits indiquent également que la difficulté est durable et que la sévérité est élevée (12,28). Il est donc probable que la difficulté porte sur la compétence elle-même. (Les règles, qui ne lisent que les chiffres, auraient choisi la piste « numeration:locale",
+          "cited_observations": [
+            15
+          ],
+          "contradictions": [
+            "numeration"
+          ],
+          "contradictions_rejected": [
+            "observation 16 : elle ne parle pas de « decodage »"
+          ],
+          "seconds_decision": 12.3,
+          "seconds_contradictions": 8.7
+        }
+      ]
+    },
+    {
+      "learner": "Cheikh",
+      "expected_options": [
+        "*:rythme"
+      ],
+      "expected_contradictions": [],
+      "options_available": [
+        "grammaire:locale",
+        "grammaire:rythme",
+        "probleme_simple:locale",
+        "probleme_simple:lecture",
+        "probleme_simple:rythme",
+        "decodage:locale",
+        "decodage:rythme"
+      ],
+      "rules": "grammaire:rythme",
+      "model_runs": [
+        {
+          "option": "probleme_simple:locale",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "Les observations des enseignants suggèrent que Cheikh a tendance à répondre rapidement, ce qui entraîne des erreurs. Les données sur les exercices ciblés confirment cette hypothèse, avec un taux d'erreurs élevé dans la compétence de problème simple. (Les règles, qui ne lisent que les chiffres, auraient choisi la piste « grammaire:rythme ».)",
+          "cited_observations": [
+            17
+          ],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 18 : elle ne parle pas de « probleme_multi_etapes »"
+          ],
+          "seconds_decision": 14.0,
+          "seconds_contradictions": 7.1
+        },
+        {
+          "option": "grammaire:rythme",
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "action inconnue « proposer_exercices ». Décision retenue : propose_exercises — 2 trimestres faibles consécutifs en orthographe grammaticale, erreur dominante « Réponse fausse donnée très vite (moins de 4 s), sans lecture complète » (56 % des erreurs). Piste : l'élève répond trop vite, avant d'avoir lu ou réfléchi, pas un manque dans la compétence (test : mêmes exercices, en invitant l'élève à pren",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 18 : elle ne parle pas de « probleme_multi_etapes »"
+          ],
+          "seconds_decision": 14.0,
+          "seconds_contradictions": 4.8
+        },
+        {
+          "option": "grammaire:rythme",
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "action inconnue « proposer_exercices ». Décision retenue : propose_exercises — 2 trimestres faibles consécutifs en orthographe grammaticale, erreur dominante « Réponse fausse donnée très vite (moins de 4 s), sans lecture complète » (56 % des erreurs). Piste : l'élève répond trop vite, avant d'avoir lu ou réfléchi, pas un manque dans la compétence (test : mêmes exercices, en invitant l'élève à pren",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 18 : elle ne parle pas de « probleme_multi_etapes »"
+          ],
+          "seconds_decision": 16.4,
+          "seconds_contradictions": 6.5
+        }
+      ]
+    },
+    {
+      "learner": "Mariama",
+      "expected_options": [],
+      "expected_contradictions": [],
+      "options_available": [],
+      "rules": null,
+      "model_runs": [
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 19 : elle ne parle pas de « calcul »",
+            "observation 19 : elle ne parle pas de « probleme_multi_etapes »"
+          ],
+          "seconds_decision": 13.5,
+          "seconds_contradictions": 11.8
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 19 : elle ne parle pas de « calcul »"
+          ],
+          "seconds_decision": 10.5,
+          "seconds_contradictions": 5.6
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 19 : elle ne parle pas de « calcul »"
+          ],
+          "seconds_decision": 9.2,
+          "seconds_contradictions": 5.6
+        }
+      ]
+    },
+    {
+      "learner": "Ousmane",
+      "expected_options": [],
+      "expected_contradictions": [],
+      "options_available": [
+        "probleme_simple:locale",
+        "probleme_simple:lecture",
+        "comprehension:locale",
+        "comprehension:lecture"
+      ],
+      "rules": "probleme_simple:locale",
+      "model_runs": [
+        {
+          "option": "probleme_simple:locale",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "Les données montrent que Ousmane a des difficultés à résoudre des problèmes simples en mathématiques, notamment en calcul, et que cela est confirmé par les exercices ciblés. Il est donc probable que la difficulté d'Ousmane soit liée à la compétence elle-même et non à la lecture du texte écrit.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [],
+          "seconds_decision": 21.9,
+          "seconds_contradictions": 0.0
+        },
+        {
+          "option": "probleme_simple:locale",
+          "source": "modèle",
+          "rejected_by_verification": false,
+          "detail": "La difficulté d'Ousmane en calcul est confirmée par ses résultats en compréhension littérale, avec une sévérité de 4,4 et une proportion de 50% d'erreurs dominantes. Cela suggère que la difficulté d'Ousmane ne vient pas de la lecture du texte écrit, mais plutôt de la compétence elle-même.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [],
+          "seconds_decision": 17.8,
+          "seconds_contradictions": 0.0
+        },
+        {
+          "option": "probleme_simple:locale",
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "action inconnue « proposer_exercices ». Décision retenue : propose_exercises — 3 trimestres faibles sur les 6 derniers en problèmes à une étape, erreur dominante « Information écrite explicitement dans le texte non retrouvée » (50 % des erreurs). Piste : la difficulté porte sur la compétence elle-même (test : contraste en calcul (opérations posées et mentales)). Une hypothèse, pas un constat : je ",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [],
+          "seconds_decision": 19.6,
+          "seconds_contradictions": 0.0
+        }
+      ]
+    },
+    {
+      "learner": "Khady",
+      "expected_options": [],
+      "expected_contradictions": [],
+      "options_available": [],
+      "rules": null,
+      "model_runs": [
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 20 : elle ne parle pas de « comprehension »"
+          ],
+          "seconds_decision": 14.3,
+          "seconds_contradictions": 6.3
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 20 : elle ne parle pas de « comprehension »"
+          ],
+          "seconds_decision": 9.6,
+          "seconds_contradictions": 5.2
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [
+            "observation 20 : elle ne parle pas de « comprehension »"
+          ],
+          "seconds_decision": 7.2,
+          "seconds_contradictions": 5.2
+        }
+      ]
+    },
+    {
+      "learner": "Lamine",
+      "expected_options": [],
+      "expected_contradictions": [],
+      "options_available": [],
+      "rules": null,
+      "model_runs": [
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [],
+          "seconds_decision": 14.4,
+          "seconds_contradictions": 0.0
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [],
+          "seconds_decision": 10.4,
+          "seconds_contradictions": 0.0
+        },
+        {
+          "option": null,
+          "source": "règles",
+          "rejected_by_verification": true,
+          "detail": "piste « None » inconnue : aucune tendance durable calculée ne la justifie. Décision retenue : nothing — Aucune difficulté durable non expliquée et non déjà suivie.",
+          "cited_observations": [],
+          "contradictions": [],
+          "contradictions_rejected": [],
+          "seconds_decision": 10.5,
+          "seconds_contradictions": 0.0
+        }
+      ]
+    }
+  ]
+}

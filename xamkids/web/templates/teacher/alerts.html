@@ -1,0 +1,81 @@
+{% extends "teacher/layout.html" %}
+{% block content %}
+<div class="page-head"><div><h1>{{ _("Alertes") }}</h1></div></div>
+
+<div class="col-title"><span class="st info" style="margin:0"></span><h2 style="margin:0">{{ _("Questions de l'agent") }}</h2><span>{{ questions | length }}</span></div>
+{% for a in questions %}
+  <div class="card finding" style="margin-bottom:12px">
+    <div class="head"><b>{{ names.get(a.learner_id, tr('Toute la classe')) }}</b>
+      <span class="st info">{{ KIND_LABEL.get(a.kind, (a.kind,))[0] }}</span><span class="small muted">{{ a.created_at | day }}</span></div>
+    <p>{{ a.message }}</p>
+
+    {% if a.payload and a.payload.attendance %}
+      <details style="margin:4px 0 10px"><summary>{{ _("Voir les {n} lignes lues", n=a.payload.attendance | length) }}</summary>
+        <table class="data" style="margin-top:8px"><tr><th>{{ _("Élève") }}</th><th>{{ _("Présents") }}</th><th>{{ _("Jours ouvrés") }}</th></tr>
+          {% for r in a.payload.attendance %}<tr><td>{{ r.name }}</td><td>{{ r.days_present }}</td><td>{{ r.days_total }}</td></tr>{% endfor %}
+        </table></details>
+      <form method="post" action="{{ url_for('teacher.import_alert', alert_id=a.id) }}" style="display:inline">
+        <button class="btn primary small">{{ _("Confirmer et importer") }}</button></form>
+    {% endif %}
+
+    {% if a.payload and a.payload.livret and a.payload.livret.grades %}
+      {% set lv = a.payload.livret %}
+      <details style="margin:4px 0 10px"><summary>{{ _("Voir les {n} notes et {m} appréciations lues", n=lv.grades | length, m=lv.appreciations | length) }}</summary>
+        <table class="data" style="margin-top:8px"><tr><th>{{ _("Année") }}</th><th>{{ _("Niveau") }}</th><th>{{ _("Trimestre") }}</th><th>{{ _("Matière") }}</th><th>{{ _("Note") }}</th></tr>
+          {% for r in lv.grades %}<tr><td>{{ r.school_year }}</td><td>{{ r.level }}</td><td>{{ _("trimestre {term}", term=r.term) }}</td><td>{{ tr(r.subject) }}</td>
+            <td>{{ '%g' % r.score }} / {{ '%g' % r.max_score }}</td></tr>{% endfor %}
+        </table>
+        {% if lv.appreciations %}<p class="small" style="margin-top:8px"><b>{{ _("Appréciations reprises comme observations") }}</b><br>
+          {% for o in lv.appreciations %}{{ _("{level} trimestre {term} · {text}", level=o.level, term=o.term, text=o.text) }}<br>{% endfor %}</p>{% endif %}
+      </details>
+      {% if lv.learner_id or lv.new_learner %}
+      <form method="post" action="{{ url_for('teacher.import_alert', alert_id=a.id) }}" style="display:inline">
+        <button class="btn primary small">{{ _("Confirmer et importer le livret (inscrire {name})", name=lv.name) if lv.new_learner else _("Confirmer et importer le livret") }}</button></form>
+      {% else %}<p class="small muted">{{ _("Import impossible tant que l'élève n'est pas identifié : répondez ci-dessous.") }}</p>{% endif %}
+    {% endif %}
+
+    {% if a.payload and a.payload.request == 'livret' %}
+      <a class="btn primary small" href="{{ url_for('teacher.documents', type='livret') }}">{{ _("Envoyer le livret") }}</a>
+    {% endif %}
+    <form method="post" action="{{ url_for('teacher.close_alert', alert_id=a.id) }}" class="actions">
+      <input type="text" name="response" placeholder="{{ _("Votre réponse…") }}" style="flex:1">
+      <button class="btn small">{{ _("Répondre") }}</button>
+    </form>
+  </div>
+{% else %}
+  <p class="empty" style="margin-bottom:8px">{{ _("Aucune question en attente.") }}</p>
+{% endfor %}
+
+<div class="col-title" style="margin-top:32px;justify-content:space-between">
+  <div style="display:flex;align-items:baseline;gap:8px"><h2 style="margin:0">{{ _("Nouveaux constats") }}</h2><span>{{ news | length }}</span></div>
+  {% if news %}<form method="post" action="{{ url_for('teacher.read_all') }}"><button class="btn ghost small">{{ _("Tout marquer comme lu") }}</button></form>{% endif %}
+</div>
+{% if news %}
+<div class="news">
+  {% for a in news %}
+  {% set kind = KIND_LABEL.get(a.kind, (a.kind, 'test')) %}
+  <div class="news-row">
+    <p>{% if a.sentence %}<span class="kind">{{ a.sentence[0] }}</span> {{ a.sentence[1] | bold_name(names.get(a.learner_id, '')) }}
+       {% else %}<b>{{ names.get(a.learner_id, tr('La classe')) }}</b> : {{ a.message | truncate(160) }}{% endif %}</p>
+    <div class="news-actions">
+      {% if a.learner_id %}<a class="btn ghost small" href="{{ url_for('teacher.profile', lid=a.learner_id) }}">{{ _("Voir") }}</a>{% endif %}
+      <form method="post" action="{{ url_for('teacher.close_alert', alert_id=a.id) }}"><input type="hidden" name="response" value="">{% for x in a.also %}<input type="hidden" name="also" value="{{ x }}">{% endfor %}<button class="btn small">{{ _("Lu") }}</button></form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+  <p class="empty">{{ _("Rien de nouveau.") }}</p>
+{% endif %}
+
+{% if closed %}
+<details style="margin-top:28px"><summary>{{ _("Historique ({n})", n=closed | length) }}</summary>
+  <div class="card" style="padding:4px 6px;margin-top:10px"><table class="data">
+  {% for a in closed %}
+  <tr><td style="width:170px" class="small"><b>{{ names.get(a.learner_id, tr('Classe')) }}</b><br><span class="muted">{{ KIND_LABEL.get(a.kind, (a.kind,))[0] }}</span></td>
+    <td class="small">{{ a.message | truncate(160) }}{% if a.response and a.response not in ('Lu.', tr('Lu.')) %}<br><span class="muted">{{ _("Réponse de {who} : {text}", who=a.responded_by, text=a.response) }}</span>{% endif %}</td></tr>
+  {% endfor %}
+  </table></div>
+</details>
+{% endif %}
+{% endblock %}

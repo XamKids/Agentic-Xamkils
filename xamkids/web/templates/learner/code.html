@@ -1,0 +1,36 @@
+{% extends "learner/base.html" %}
+{% block content %}
+<h1 class="kid-title">{{ _("Bonjour {name} !", name=l.first_name) }}</h1>
+{% if locked %}
+<p class="muted">{{ _("Trop d'essais. Attends une minute, ou demande ton code à ta maîtresse ou ton maître.") }}</p>
+<p><a class="btn" href="{{ url_for('learner.code', lid=l.id) }}">{{ _("Réessayer") }}</a></p>
+{% else %}
+<p class="muted" style="margin:0 0 24px">{{ _("Tape ton code secret.") }}</p>
+<form method="post" class="pin" id="pin-form">
+  <input type="hidden" name="pin" id="pin-value">
+  <div class="pin-dots"><i></i><i></i><i></i><i></i></div>
+  <div class="pin-pad">
+    {% for d in [1, 2, 3, 4, 5, 6, 7, 8, 9] %}<button type="button" data-d="{{ d }}">{{ d }}</button>{% endfor %}
+    <button type="button" data-del class="muted-key">{{ _("Effacer") }}</button>
+    <button type="button" data-d="0">0</button>
+    <a href="{{ url_for('learner.choose') }}" class="muted-key">{{ _("Retour") }}</a>
+  </div>
+</form>
+<script>
+(() => {
+  const val = document.getElementById("pin-value"), dots = document.querySelectorAll(".pin-dots i");
+  const show = () => dots.forEach((d, i) => d.classList.toggle("on", i < val.value.length));
+  document.querySelectorAll(".pin-pad [data-d]").forEach((b) => b.addEventListener("click", () => {
+    if (val.value.length >= 4) return;
+    val.value += b.dataset.d; show();
+    if (val.value.length === 4) setTimeout(() => document.getElementById("pin-form").submit(), 150);
+  }));
+  document.querySelector(".pin-pad [data-del]").addEventListener("click", () => { val.value = val.value.slice(0, -1); show(); });
+  document.addEventListener("keydown", (e) => {
+    if (/^[0-9]$/.test(e.key)) document.querySelector(`.pin-pad [data-d="${e.key}"]`)?.click();
+    if (e.key === "Backspace") document.querySelector(".pin-pad [data-del]").click();
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "learner/base.html" %}
+{% import "_icons.html" as ic %}
+{% block content %}
+<section class="card recap-head">
+  <h1>{{ message }}</h1>
+  <div class="stars-won">{% for i in range(stars) %}<span style="--i:{{ i }}">{{ ic.star() }}</span>{% endfor %}</div>
+  <p class="muted">{{ _n(stars, "+{n} étoile pour tes efforts", "+{n} étoiles pour tes efforts") }}</p>
+  <p style="font-size:1.2rem;font-weight:700;margin:18px 0 0">{{ cheer }}</p>
+</section>
+<form class="card" method="post" style="margin-top:20px">
+  <h3>{{ _("Comment c'était ?") }}</h3>
+  <div class="feelings">
+    {% for key, label in feelings.items() %}
+    <label><input type="radio" name="feeling" value="{{ key }}"><span>{{ label }}</span></label>
+    {% endfor %}
+  </div>
+  <h3 style="margin-top:20px">{{ _("Qu'est-ce que tu as préféré ?") }}</h3>
+  <div class="chips">
+    {% for x in liked %}<label class="chip"><input type="checkbox" name="liked" value="{{ x }}"><span>{{ x }}</span></label>{% endfor %}
+  </div>
+  <p style="margin-top:20px;display:flex;gap:10px">
+    <button class="btn primary" name="action" value="send">{{ _("Envoyer") }}</button>
+    <button class="btn" name="action" value="later">{{ _("Plus tard") }}</button>
+  </p>
+</form>
+{% endblock %}

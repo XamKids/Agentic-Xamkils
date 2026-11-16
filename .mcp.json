@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "xamkids-profile": {
+      "command": ".venv/bin/python",
+      "args": [
+        "-m",
+        "xamkids.mcp_server"
+      ]
+    },
+    "run-python": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "PATH=\"$PWD/.tools/bin:$PATH\" exec .venv/bin/python -m mcp_run_python stdio"
+      ]
+    },
+    "filesystem": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "PATH=\"$PWD/.tools/node/bin:$PATH\" exec npx -y @modelcontextprotocol/server-filesystem \"$PWD/uploads\""
+      ]
+    }
+  }
+}

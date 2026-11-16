@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% import "_icons.html" as ic %}
+{% block body_class %}kid{% endblock %}
+{% block body %}
+<main class="wrap page" {% if voice_urls %}data-voice='{{ voice_urls | tojson }}'{% endif %}>
+  {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class="flash {{ 'warn' if category == 'warn' }}">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</main>
+<button class="btn primary voice-unlock">{{ ic.icon("speaker") }} {{ _("Activer la voix") }}</button>
+{% endblock %}

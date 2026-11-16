@@ -1,0 +1,29 @@
+{% extends "teacher/layout.html" %}
+{% block content %}
+<div class="page-head"><div><h1>{{ _("Documents") }}</h1>
+  <p>{{ _("L'agent lit le document et vous demande confirmation avant tout import.") }}</p></div></div>
+
+<form class="card" method="post" enctype="multipart/form-data" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:14px 16px">
+  <div class="seg">
+    {% set livret = request.args.get('type') == 'livret' %}
+    <label><input type="radio" name="kind" value="registre" {{ '' if livret else 'checked' }}><span>{{ _("Registre d'appel") }}</span></label>
+    <label><input type="radio" name="kind" value="livret" {{ 'checked' if livret }}><span>{{ _("Livret scolaire") }}</span></label>
+  </div>
+  <label class="file btn">{{ _("Choisir un fichier") }}
+    <input type="file" name="document" accept=".csv,.png,.jpg,.jpeg" required
+           onchange="this.closest('form').querySelector('.file-name').textContent = this.files[0] ? this.files[0].name : '{{ _("CSV ou photo") }}'"></label>
+  <span class="file-name">{{ _("CSV ou photo") }}</span>
+  <button class="btn primary" style="margin-left:auto">{{ _("Envoyer") }}</button>
+</form>
+
+{% if docs %}
+<div class="section-title"><h2>{{ _("Reçus") }}</h2></div>
+<div class="card"><table class="data"><tr><th>{{ _("Fichier") }}</th><th>{{ _("Envoyé par") }}</th><th>{{ _("Le") }}</th><th>{{ _("Statut") }}</th></tr>
+  {% for d in docs %}<tr><td class="small">{{ d.filename.split('_', 1)[-1] }}</td><td class="small">{{ d.uploaded_by }}</td><td class="small">{{ d.uploaded_at | day }}</td>
+    <td>{% set st = {'imported': (tr('Importé'), 'ok'), 'rejected': (tr('Refusé'), 'bad')}.get(d.status, (tr('En attente'), 'watch')) %}<span class="st {{ st[1] }}">{{ st[0] }}</span></td></tr>{% endfor %}
+</table></div>
+{% endif %}
+
+<div class="section-title"><h2>{{ _("Exemples") }}</h2></div>
+<p class="links">{% for s in samples %}<a href="{{ url_for('teacher.sample', name=s) }}">{{ s }}</a>{% endfor %}</p>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block body_class %}pro{% endblock %}
+{% block body %}
+<main class="wrap landing">
+  <h1>{{ _("Qui êtes-vous ?") }}</h1>
+  <form method="post" class="doors" style="grid-template-columns:repeat(auto-fit,minmax(220px,300px))">
+    {% for t in teachers %}
+    <button class="door btn" name="teacher_id" value="{{ t.id }}"><h2 style="margin:0">{{ t.name }}</h2></button>
+    {% endfor %}
+  </form>
+</main>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "teacher/layout.html" %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ cls.name }}</h1>
+    <p>{{ _n(rows | length, "{n} élève", "{n} élèves") if LANG == 'en' else _("{n} élèves", n=rows | length) }} · {{ school.name if school }}</p></div>
+  <form method="post" action="{{ url_for('teacher.review') }}"><button class="btn primary">{{ _("Lancer la revue du trimestre") }}</button></form>
+</div>
+
+{% if n_alerts or n_pending or n_news %}
+<div class="todo">
+  {% if n_alerts or n_pending %}<b>{{ _n(n_alerts + n_pending, "{n} élément attend votre décision", "{n} éléments attendent votre décision") }}</b>
+  {% if n_pending %}<a href="{{ url_for('teacher.approvals') }}">{{ _("{n} à valider", n=n_pending) }}</a>{% endif %}
+  {% if n_alerts %}<a href="{{ url_for('teacher.alerts') }}">{{ _n(n_alerts, "{n} question de l'agent", "{n} questions de l'agent") }}</a>{% endif %}
+  {% else %}<b>{{ _("Rien n'attend votre décision.") }}</b>{% endif %}
+  {% if n_news %}<a href="{{ url_for('teacher.alerts') }}" class="muted" style="margin-left:auto">{{ _n(n_news, "{n} nouveau constat", "{n} nouveaux constats") }}</a>{% endif %}
+</div>
+{% endif %}
+
+<div class="stats">
+  <div><b>{{ n_difficulties }}</b>{{ _n(n_difficulties, "difficulté suivie", "difficultés suivies") }}</div>
+  <div><b>{{ rows | sum(attribute='in_test') }}</b>{{ _n(rows | sum(attribute='in_test'), "hypothèse en test", "hypothèses en test") }}</div>
+  <div><b>{{ rows | map(attribute='strengths') | map('length') | sum }}</b>{{ _("points forts") }}</div>
+</div>
+
+<div class="card">
+<table class="data">
+  <tr><th style="width:21%">{{ _("Élève") }}</th><th style="width:15%">{{ _("Trimestre précédent") }}</th><th>{{ _("Constats") }}</th><th style="width:10%">{{ _("À traiter") }}</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td><a href="{{ url_for('teacher.profile', lid=r.l.id) }}" class="who-cell"><span class="initials">{{ r.l | initials }}</span>{{ r.l.first_name }} {{ r.l.last_name }}</a></td>
+    <td><div style="display:flex;align-items:center;gap:10px"><div class="bar" style="flex:1"><span style="width:{{ (r.accuracy * 100) | round }}%"></span></div>
+      <span class="small">{{ r.accuracy | pct }}</span></div></td>
+    <td>
+      {% for grp in r.lines %}<div class="fline"><span class="st {{ grp.cls }}">{{ grp.label }}</span><span>
+        {%- for x in grp.entries %}<b>{{ x.what }}</b>{% if x.detail and not grp.common %} <span class="muted">{{ ('· ' if grp.cls in ('difficulty', 'watch')) ~ x.detail }}</span>{% endif %}{{ ', ' if not loop.last }}{% endfor %}
+        {%- if grp.common %} <span class="muted">· {{ grp.common }}</span>{% endif %}</span></div>{% endfor %}
+      {% if not r.lines %}<span class="small" style="color:var(--faint)">{{ _("Aucun constat") }}</span>{% endif %}
+    </td>
+    <td>{% if r.alerts %}<a href="{{ url_for('teacher.alerts') }}" class="small">{{ _n(r.alerts, "{n} alerte", "{n} alertes") }}</a>{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+
+{% endblock %}

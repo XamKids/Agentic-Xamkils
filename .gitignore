@@ -1,0 +1,18 @@
+# Local environment and tools
+.venv/
+.tools/
+__pycache__/
+*.pyc
+.DS_Store
+.claude/
+
+# Runtime data (learner records, audit log, agent state, keys) never leaves the machine
+data/
+uploads/*
+evals/.work/
+evals/run.log
+
+# Local-only files
+*.mp4
+*.mov
+README.fr.local.md

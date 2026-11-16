@@ -1,0 +1,183 @@
+{% extends "teacher/layout.html" %}
+
+{% macro source_line(src) %}
+  {% set d = src.data or {} %}
+  <li><code>{{ src.ref }}</code>
+  {% if src.kind == 'answer' %}{{ _("{year} trimestre {term} · réponse <b>{given}</b> (attendu {expected}) ·", year=d.school_year, term=d.term, given=d.given, expected=d.expected) }}
+    {{ ERROR_TAXONOMY.get(d.error_type, '') if d.error_type else (tr('juste') if d.correct else '—') }} · {{ d.seconds }} s
+  {% elif src.kind == 'observation' %}{{ _("{year} trimestre {term} · {author} : « {text} »", year=d.school_year, term=d.term, author=d.author, text=d.text) }}
+  {% elif src.kind == 'exercise' %}{{ _("exercice ciblé ({probe}) validé par {who} :", probe={'contrast': tr('contraste'), 'listened': tr('écouté'), 'slowed': tr('en prenant son temps')}.get(d.probe, tr('cible')), who=d.reviewed_by) }}
+    {{ (d.prompt or '')[:110] }}
+  {% elif src.kind == 'report' %}{{ _("livret scolaire {level} {year} trimestre {term} · {subject} : {score} / {max}", level=d.level, year=d.school_year, term=d.term, subject=d.subject, score='%g' % d.score, max='%g' % d.max_score) }}
+  {% elif src.kind == 'attendance' %}{{ _("registre {year} trimestre {term} : {present} jours de présence sur {total}", year=d.school_year, term=d.term, present=d.days_present, total=d.days_total) }}
+  {% endif %}</li>
+{% endmacro %}
+
+{% macro finding(f, actions=true) %}
+<div class="card finding" style="margin-bottom:10px">
+  <div class="head">
+    <span class="skill">{{ f.skill | domain }}</span>
+    {% if f.status == 'contested' %}<span class="st bad">{{ _("Contesté par {who}", who=f.validated_by) }}</span>
+    {% elif f.status == 'resolved' %}<span class="st ok">{{ _("Résolu") }}</span>
+    {% elif f.status == 'ruled_out' %}<span class="st test">{{ _("Hypothèse écartée") }}</span>
+    {% elif f.validated_by %}<span class="st ok">{{ _("Validé par {who}, {date}", who=f.validated_by, date=f.validated_at | day) }}</span>
+    {% else %}<span class="st watch">{{ _("En attente de votre validation") }}</span>{% endif %}
+  </div>
+  {% if f.facts %}
+  <dl class="facts">{% for k, v in f.facts.rows %}<dt>{{ k }}</dt><dd>{{ v }}</dd>{% endfor %}
+    {% if f.facts.tip %}<dt class="tip">{{ f.facts.tip_label or tr("Piste en classe") }}</dt><dd class="tip">{{ f.facts.tip }}</dd>{% endif %}</dl>
+  {% else %}<p>{{ f.statement }}</p>{% endif %}
+  {% if not f.facts %}<div class="meta">{% if f.since %}{{ _("Depuis {since}", since=f.since) }}{% endif %}</div>{% endif %}
+  {% if f.review_comment %}<div class="small" style="margin-top:6px">{{ _("Votre remarque : {text}", text=f.review_comment) }}</div>{% endif %}
+  <div class="toggles">
+    {% if f.facts %}<button type="button" data-open="st-{{ f.id }}">{{ _("Constat rédigé par l'agent") }}</button>{% endif %}
+    <button type="button" data-open="so-{{ f.id }}">{{ _("Voir les {n} sources", n=f.sources | length) }}</button>
+  </div>
+  {% if f.facts %}<div class="panel" id="st-{{ f.id }}" hidden><p class="small" style="margin:0">{{ f.statement }}</p></div>{% endif %}
+  <div class="panel" id="so-{{ f.id }}" hidden><ul style="margin:0">{% for src in f.resolved %}{{ source_line(src) }}{% endfor %}</ul></div>
+  {% if actions and f.status == 'active' and not f.validated_by %}
+  <div class="actions">
+    <form method="post" action="{{ url_for('teacher.validate', fid=f.id) }}"><button class="btn primary small">{{ _("Valider") }}</button></form>
+    <details><summary class="btn small" style="color:var(--ink)">{{ _("Contester") }}</summary>
+      <form method="post" action="{{ url_for('teacher.contest', fid=f.id) }}" style="margin-top:8px;max-width:520px">
+        <textarea name="reason" required placeholder="{{ _("Ce que vous observez en classe…") }}"></textarea>
+        <button class="btn danger small" style="margin-top:6px">{{ _("Contester ce constat") }}</button>
+      </form>
+    </details>
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% block content %}
+{% set idx = learner_ids.index(lid) %}
+<div class="page-head">
+  <div>
+    <div class="small" style="margin-bottom:6px"><a href="{{ url_for('teacher.dashboard') }}" class="muted">{{ cls.name }}</a>
+      {% if idx > 0 %}<a class="muted" style="margin-left:14px" href="{{ url_for('teacher.profile', lid=learner_ids[idx - 1], vue=tab) }}">‹</a>{% endif %}
+      {% if idx < learner_ids | length - 1 %}<a class="muted" style="margin-left:8px" href="{{ url_for('teacher.profile', lid=learner_ids[idx + 1], vue=tab) }}">›</a>{% endif %}</div>
+    <div class="who-head"><span class="initials big">{{ l | initials }}</span><div>
+    <h1 style="margin:0">{{ l.first_name }} {{ l.last_name }}</h1>
+    <p style="margin:2px 0 0" class="small">{{ _("{level} · matricule {matricule} · code élève {pin}", level=l.level, matricule=l.matricule or '—', pin=pin) }}</p></div></div>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <form method="post" action="{{ url_for('teacher.analyse', lid=lid) }}"><button class="btn small">{{ _("Analyser") }}</button></form>
+    <form method="post" action="{{ url_for('teacher.guardian_summary', lid=lid) }}"><button class="btn small">{{ _("Résumé pour la famille") }}</button></form>
+  </div>
+</div>
+
+<nav class="tabs">
+  {% for key, label in [('constats', tr('Constats')), ('parcours', tr('Parcours')), ('observations', tr('Observations'))] %}
+  <a class="{{ 'on' if tab == key }}" href="{{ url_for('teacher.profile', lid=lid, vue=key) }}">{{ label }}</a>
+  {% endfor %}
+</nav>
+
+{% if tab == 'constats' %}
+<div class="constats">
+  {% for kind, title in [('difficulty', tr('Difficultés')), ('watch', tr('À surveiller')), ('strength', tr('Points forts'))] %}
+  {% set items = active | selectattr('kind', 'equalto', kind) | list %}
+  {% if items %}
+  <section>
+    <div class="col-title"><span class="st {{ kind }}" style="margin:0"></span><h2 style="margin:0">{{ title }}</h2><span>{{ items | length }}</span></div>
+    {% for f in items %}{{ finding(f) }}{% endfor %}
+  </section>
+  {% endif %}
+  {% endfor %}
+  {% if hypotheses or followups %}
+  <section>
+    <div class="col-title"><span class="st test" style="margin:0"></span><h2 style="margin:0">{{ _("En cours de vérification") }}</h2><span>{{ hypotheses | length + followups | length }}</span></div>
+    {% for h in hypotheses %}
+    <div class="card finding"><div class="head"><span class="skill">{{ h.skill | domain }}</span><span class="st test">{{ h.state }}</span></div>
+      <p>{{ (h.hypothesis | hypothesis).main }}</p></div>
+    {% endfor %}
+    {% for f in followups %}
+    <div class="card finding"><div class="head"><span class="skill">{{ _("Prochaine vérification") }}</span><span class="st test">{{ _n(f.sessions_left, "dans {n} séance", "dans {n} séances") }}</span></div>
+      <p>{{ f.reason }}</p></div>
+    {% endfor %}
+  </section>
+  {% endif %}
+  {% if not (active or hypotheses or followups) %}<p class="empty">{{ _("Aucun constat pour l'instant.") }}</p>{% endif %}
+</div>
+{% if past %}
+<details style="margin-top:20px"><summary>{{ _n(past | length, "Historique du profil : {n} constat résolu, écarté ou contesté", "Historique du profil : {n} constats résolus, écartés ou contestés") }}</summary>
+  <div style="margin-top:10px">{% for f in past %}{{ finding(f, false) }}{% endfor %}</div>
+</details>
+{% endif %}
+
+{% elif tab == 'parcours' %}
+<div class="col-title"><h2 style="margin:0">{{ _("Réussite aux exercices par trimestre") }}</h2></div>
+<table class="frise">
+  <tr><th></th><th>{{ _("1er trimestre") }}</th><th>{{ _("2e trimestre") }}</th><th>{{ _("3e trimestre") }}</th></tr>
+  {% for y in frise %}
+    {% if y.new_school %}<tr class="schoolrow"><td colspan="4">{{ y.school }}</td></tr>{% endif %}
+    <tr>
+      <th title="{{ y.teacher }}">{{ y.level }} <span class="muted">{{ y.school_year }}</span></th>
+      {% for t in y.terms %}
+      <td title="{{ t.notes | join(' | ') }}">
+        {% if t.rate is none %}<span class="muted">—</span>{% else %}{{ t.rate | pct }}
+        {% endif %}
+      </td>
+      {% endfor %}
+    </tr>
+  {% endfor %}
+</table>
+
+{% for subject, title in [('maths', tr('Mathématiques')), ('francais', tr('Français'))] %}
+{% if minis[subject] %}
+<div class="col-title" style="margin-top:28px"><h2 style="margin:0">{{ title }}</h2></div>
+<div class="minis">
+  {% for m in minis[subject] %}
+  <div class="mini"><div class="t">{{ m.label }}{% if m.trend %}<span class="trend {{ m.trend[0] }}">{{ m.trend[1] }}</span>{% endif %}</div>
+    <div style="height:90px"><canvas data-chart='{{ m.chart | tojson }}' data-mini="1"></canvas></div></div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endfor %}
+
+{% if livret %}
+<div class="col-title" style="margin-top:28px"><h2 style="margin:0">{{ _("Livret scolaire") }}</h2>
+  </div>
+<div class="card" style="padding:4px 6px">
+<table class="data">
+  <tr><th>{{ _("Année") }}</th><th>{{ _("Matière") }}</th><th>{{ _("1er trimestre") }}</th><th>{{ _("2e trimestre") }}</th><th>{{ _("3e trimestre") }}</th></tr>
+  {% for y in livret %}{% for subject, terms in y.subjects.items() %}
+  <tr>{% if loop.first %}<td rowspan="{{ y.subjects | length }}"><b>{{ y.level }}</b> <span class="muted">{{ y.school_year }}</span>{% if y.school %}<br><span class="small muted">{{ y.school }}</span>{% endif %}</td>{% endif %}
+    <td>{{ tr(subject) }}</td>
+    {% for t in (1, 2, 3) %}<td>{% if t in terms %}{{ '%g' % terms[t].score }}<span class="small muted"> / {{ '%g' % terms[t].max_score }}</span>{% else %}<span class="muted">—</span>{% endif %}</td>{% endfor %}
+  </tr>{% endfor %}{% endfor %}
+</table>
+</div>
+{% endif %}
+
+{% else %}
+<div class="grid g2" style="align-items:start">
+  <section>
+    <div class="col-title"><h2 style="margin:0">{{ _("Observations des enseignants") }}</h2><span>{{ observations | length }}</span></div>
+    <details style="margin-bottom:14px"><summary>{{ _("Ajouter une observation") }}</summary>
+      <form method="post" action="{{ url_for('teacher.add_observation', lid=lid) }}" style="margin-top:8px">
+        <textarea name="text" placeholder="{{ _("Ce que vous avez remarqué en classe…") }}" style="min-height:70px"></textarea>
+        <button class="btn small" style="margin-top:6px">{{ _("Ajouter") }}</button>
+      </form></details>
+    {% for o in observations %}
+      <div style="padding:10px 0;border-top:1px solid var(--line)"><div class="small muted">{{ _("{year} trimestre {term} · {author}", year=o.school_year, term=o.term, author=o.author) }}</div>
+        <div style="font-size:.92rem">{{ o.text }}</div></div>
+    {% else %}<p class="empty">{{ _("Aucune observation.") }}</p>{% endfor %}
+  </section>
+  <section>
+    <div class="col-title"><h2 style="margin:0">{{ _("Scolarité") }}</h2></div>
+    <div class="card"><table class="data">{% for y in schooling %}<tr><td style="width:60px"><b>{{ y.level }}</b></td><td class="small muted" style="width:100px;white-space:nowrap">{{ y.school_year }}</td>
+      <td class="small">{{ y.school }}<br><span class="muted">{{ y.teacher }}</span></td></tr>{% endfor %}</table></div>
+    {% if interests %}
+    <div class="col-title" style="margin-top:24px"><h2 style="margin:0">{{ _("Ce que l'élève aime") }}</h2><span>{{ _("déclaré par l'élève") }}</span></div>
+    <p>{% for i in interests %}<span class="badge">{{ i }}</span> {% endfor %}</p>
+    {% endif %}
+    {% if summaries %}
+    <div class="col-title" style="margin-top:24px"><h2 style="margin:0">{{ _("Résumés validés pour la famille") }}</h2></div>
+    {% for s in summaries %}<div class="card" style="margin-bottom:8px"><p class="small" style="margin:0 0 6px">{{ s.final_text }}</p>
+      <span class="small muted">{{ _("Validé par {who} le {date}", who=s.reviewed_by, date=s.reviewed_at | day) }}</span> ·
+      <a class="small" href="{{ url_for('teacher.download_summary', summary_id=s.id) }}">{{ _("Télécharger") }}</a></div>{% endfor %}
+    {% endif %}
+  </section>
+</div>
+{% endif %}
+{% endblock %}

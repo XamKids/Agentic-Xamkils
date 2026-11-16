@@ -1,0 +1,19 @@
+{% extends "teacher/layout.html" %}
+{% block content %}
+<div class="page-head"><div><h1>{{ _("Raisonnement de l'agent") }}</h1></div></div>
+{% for r in runs %}
+{% set st = {'waiting': (tr('En pause'), 'watch'), 'done': (tr('Terminée'), 'ok'), 'error': (tr('Erreur'), 'bad'), 'running': (tr('En cours'), 'info')}.get(r.status, (r.status, 'test')) %}
+<details class="card finding" style="margin-bottom:8px">
+  <summary style="color:var(--ink);font-size:.92rem">
+    <b>{{ names.get(r.learner_id, tr('Classe')) }}</b> <span class="muted">· {{ TRIGGER_LABEL.get(r.trigger, r.trigger) }} · {{ r.updated_at | day }} {{ r.updated_at[11:16] }}</span>
+    <span class="st {{ st[1] }}" style="margin-left:10px">{{ st[0] }}</span>
+    <div class="small muted" style="margin:4px 0 0 0">{{ r.outcome or '' }}</div></summary>
+  <div class="steps" style="margin-top:12px">
+    {% for s in r.steps %}<div class="s"><b>{{ s.title }}</b><span class="small muted">{{ s.ts[11:19] }}</span> {{ s.detail }}</div>{% endfor %}
+  </div>
+  <p class="small muted">{{ _("thread_id : {id}", id=r.thread_id) }}</p>
+</details>
+{% else %}
+<p class="empty">{{ _("L'agent n'a pas encore été lancé. Essayez la revue de fin de trimestre depuis « Ma classe ».") }}</p>
+{% endfor %}
+{% endblock %}

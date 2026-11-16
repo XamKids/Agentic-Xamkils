@@ -1,0 +1,32 @@
+{% extends "learner/base.html" %}
+{% import "_icons.html" as ic %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center">
+  <b>{{ _("Exercice {i} sur {n}", i=s.i + 1, n=s.ex | length) }}</b>
+  <form method="post" action="{{ url_for('learner.stop', lid=l.id) }}"><button class="btn small">{{ _("Arrêter") }}</button></form>
+</div>
+<div class="dots">{% for x in s.ex %}<i class="{{ 'done' if loop.index0 < s.i else 'now' if loop.index0 == s.i }}"></i>{% endfor %}</div>
+
+{% if feedback %}<div class="feedback {{ feedback[0] }}">{{ feedback[1] }}</div>{% endif %}
+{% if q.retry %}<div class="feedback retry">{{ _("Pas tout à fait… Relis bien et essaie encore une fois !") }}</div>{% endif %}
+
+{% if e.probe == 'listened' %}
+<div class="card question listen">{{ ic.icon("headphones") }} <span>{{ _("<b>Écoute bien :</b> l'histoire et la question sont lues à voix haute.") }}</span></div>
+{% else %}
+<div class="card question">{{ e.prompt | prompt }}</div>
+{% endif %}
+<div class="aids">
+  <button type="button" class="btn" data-listen="{{ listen_url }}">{{ ic.icon("speaker") }} {{ tr('Réécouter') if e.probe == 'listened' else tr('Écouter') }}</button>
+  {% if e.hint %}<button type="button" class="btn" data-hint="{{ hint_url }}">{{ ic.icon("bulb") }} {{ _("Indice") }}</button>{% endif %}
+</div>
+{% if e.hint %}<div class="hint {{ 'show' if q.hint }}">{{ ic.icon("bulb") }} <span>{{ e.hint }}</span></div>{% endif %}
+
+<form method="post" action="{{ url_for('learner.answer', lid=l.id) }}" style="margin-top:18px">
+  <input type="hidden" name="read_aloud" value="{{ '1' if q.read_aloud else '0' }}">
+  <input type="hidden" name="hint" value="{{ '1' if q.hint else '0' }}">
+  {% if e.probe == 'slowed' %}<p class="wait-msg">⏳ {{ _("Prends ton temps : relis bien. Les réponses arrivent dans quelques secondes.") }}</p>{% endif %}
+  <div class="choices"{% if e.probe == 'slowed' %} data-delay="8" style="visibility:hidden"{% endif %}>
+    {% for c in e.choices %}<button name="choice" value="{{ c }}">{{ c }}</button>{% endfor %}
+  </div>
+</form>
+{% endblock %}
