@@ -15,6 +15,12 @@
 {% else %}
 <div class="card question">{{ e.prompt | prompt }}</div>
 {% endif %}
+{% if scene_url %}
+<div class="scene3d" data-src="{{ scene_url }}" role="img" aria-label="{{ _('Scène en 3D de l\'exercice') }}" hidden></div>
+<p class="scene3d-help" hidden>{{ _("Glisse pour tourner la scène. Touche un objet pour le mettre de côté.") }}</p>
+<script type="importmap">{"imports": {"three": "{{ url_for('static', filename='vendor/three.module.min.js') }}", "three/addons/": "{{ url_for('static', filename='vendor/addons/') }}"}}</script>
+<script type="module" src="{{ url_for('static', filename='js/scene3d.js') }}"></script>
+{% endif %}
 <div class="aids">
   <button type="button" class="btn" data-listen="{{ listen_url }}">{{ ic.icon("speaker") }} {{ tr('Réécouter') if e.probe == 'listened' else tr('Écouter') }}</button>
   {% if e.hint %}<button type="button" class="btn" data-hint="{{ hint_url }}">{{ ic.icon("bulb") }} {{ _("Indice") }}</button>{% endif %}

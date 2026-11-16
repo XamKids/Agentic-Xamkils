@@ -25,6 +25,7 @@ AGENT_DB = Path(os.environ.get("XAMKIDS_AGENT_DB", DATA_DIR / "agent.db"))
 OLLAMA_URL = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434")
 LLM_MODEL = os.environ.get("XAMKIDS_LLM", "llama3.1:8b")
 VLM_MODEL = os.environ.get("XAMKIDS_VLM", "qwen2.5vl:7b")
+SCENE_MODEL = os.environ.get("XAMKIDS_SCENE_LLM", LLM_MODEL)   # modèle qui conçoit les scènes 3D
 # Exercices ciblés : par défaut choisis dans la banque validée. Mettre à 1 pour les faire générer par le modèle
 # (expérimental : un modèle 8B produit encore trop d'exercices faux ou mal ciblés).
 LLM_EXERCISES = os.environ.get("XAMKIDS_LLM_EXERCISES", "0") == "1"
@@ -62,3 +63,7 @@ def tool_env() -> dict[str, str]:
     extra = [str(TOOLS_DIR / "bin"), str(TOOLS_DIR / "node" / "bin"), str(Path(PYTHON).parent)]
     env["PATH"] = os.pathsep.join(extra + [env.get("PATH", "")])
     return env
+
+# Code unique pour tous (enseignants et élèves) sur la version en ligne ; absent en local : chaque élève garde son code.
+DEMO_PIN = os.environ.get("XAMKIDS_DEMO_PIN", "")
+TEACHER_PIN = DEMO_PIN or "0000"

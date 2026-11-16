@@ -3,16 +3,21 @@ services:
   - type: web
     name: xamkids-profile
     runtime: docker
-    plan: starter
+    branch: deploy
+    plan: free                      # the free plan sleeps when idle; use "starter" for a demo that must stay awake
     healthCheckPath: /acces
     envVars:
       - key: XAMKIDS_ACCESS_CODE      # code asked at the entrance of the platform
         sync: false
+      - key: XAMKIDS_DEMO_PIN         # one code for every teacher and every learner (fictional data only)
+        value: "0000"
       - key: XAMKIDS_LLM_API_URL
         value: https://openrouter.ai/api/v1
       - key: XAMKIDS_LLM_API_KEY      # your OpenRouter key, never committed
         sync: false
-      - key: XAMKIDS_LLM
+      - key: XAMKIDS_LLM              # reasoning and planning (open weights)
         value: meta-llama/llama-3.1-8b-instruct
-      - key: XAMKIDS_VLM
-        value: qwen/qwen-2.5-vl-7b-instruct
+      - key: XAMKIDS_VLM              # reads scanned registers (open weights, vision)
+        value: qwen/qwen3-vl-30b-a3b-instruct
+      - key: XAMKIDS_SCENE_LLM        # the agent designs the 3D scene of each exercise
+        value: qwen/qwen3-vl-30b-a3b-instruct

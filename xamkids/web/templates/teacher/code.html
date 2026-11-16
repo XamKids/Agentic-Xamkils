@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body_class %}pro{% endblock %}
+{% block body %}
+<main class="wrap landing">
+  <h1>{{ teacher.name }}</h1>
+  {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class="flash {{ 'warn' if category == 'warn' }}">{{ message }}</div>
+  {% endfor %}
+  <form method="post" style="display:flex;gap:10px;max-width:340px;margin-top:14px">
+    <input type="password" name="code" inputmode="numeric" autofocus required autocomplete="off"
+           aria-label="{{ _('Code de l\'enseignant') }}" placeholder="{{ _('Code de l\'enseignant') }}"
+           style="flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff">
+    <button class="btn primary">{{ _("Entrer") }}</button>
+  </form>
+  <p class="muted" style="margin-top:18px"><a href="{{ url_for('teacher.choose') }}">{{ _("Ce n'est pas moi") }}</a></p>
+</main>
+{% endblock %}

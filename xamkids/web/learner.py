@@ -14,6 +14,7 @@ from .. import agent
 from ..config import CURRENT_YEAR
 from ..i18n import tr
 from ..records import db, sessions
+from ..agent import scenes
 from . import plural, voice
 
 bp = Blueprint("learner", __name__, url_prefix="/eleve")
@@ -128,6 +129,7 @@ def save_interests(lid: int):
 def start(lid: int):
     _learner(lid)
     kind, exercises = sessions.next_exercises(lid, subject=request.form.get("sujet") or None)
+    scenes.prefetch(exercises, lid)   # l'agent conçoit les scènes 3D en arrière-plan
     session["seance"] = {"lid": lid, "sid": sessions.start_session(lid, kind), "kind": kind,
                          "ex": [e["id"] for e in exercises], "i": 0, "score": 0, "second": 0, "prefix": ""}
     return redirect(url_for(".question", lid=lid))
@@ -152,9 +154,22 @@ def question(lid: int):
     feedback = s.pop("feedback", None)
     session["seance"] = s
     return render_template("learner/question.html", l=_learner(lid), e=e, s=s, q=q, voice_urls=voice_urls,
+                           scene_url=url_for(".scene", lid=lid, exercise_id=e["id"]) if e.get("subject") == "maths" else None,
                            feedback=feedback,
                            listen_url=voice.clip(e.get("read_aloud_text") or e["prompt"]),
                            hint_url=voice.clip(e.get("hint")))
+
+
+@bp.get("/<int:lid>/scene/<exercise_id>")
+def scene(lid: int, exercise_id: str):
+    """La scène 3D d'un exercice de la séance en cours, une fois conçue par l'agent."""
+    s = session.get("seance")
+    if not s or s["lid"] != lid or exercise_id not in s["ex"]:
+        abort(404)
+    ready, spec = scenes.cached(exercise_id)
+    if not ready:
+        scenes.prefetch([_exercise(exercise_id)], lid)
+    return {"ready": ready, "scene": spec}
 
 
 @bp.post("/<int:lid>/seance/reponse")

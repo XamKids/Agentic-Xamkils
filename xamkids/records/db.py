@@ -164,6 +164,9 @@ def learners_in_class(class_id: int) -> list[dict]:
 def learner_pin(learner_id: int) -> str:
     """Code à 4 chiffres de l'élève (créé au premier besoin). L'enseignant le voit sur le profil et le donne à l'élève."""
     import secrets
+    from ..config import DEMO_PIN
+    if DEMO_PIN:
+        return DEMO_PIN
     r = row("SELECT pin FROM learners WHERE id = ?", (learner_id,))
     if r and r["pin"]:
         return r["pin"]

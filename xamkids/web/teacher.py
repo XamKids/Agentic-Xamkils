@@ -5,6 +5,7 @@ tournent en arrière-plan : la page affiche leur avancement et se recharge quand
 """
 from __future__ import annotations
 
+import hmac
 import json
 import re
 import time
@@ -13,7 +14,7 @@ from flask import (Blueprint, Response, abort, flash, g, jsonify, redirect, rend
                    send_from_directory, session, url_for)
 
 from .. import agent
-from ..config import CURRENT_TERM, CURRENT_YEAR, MIN_ANSWERS_PER_TERM, ROOT, UPLOAD_DIR
+from ..config import CURRENT_TERM, CURRENT_YEAR, MIN_ANSWERS_PER_TERM, ROOT, TEACHER_PIN, UPLOAD_DIR
 from ..knowledge import CLASSROOM_TIPS, ERROR_SHORT, ERROR_TAXONOMY, SKILLS, domain_label, short_label
 from .. import wording
 from ..i18n import LANG, tr
@@ -36,15 +37,17 @@ QUESTION_KINDS = ("question", "document")  # alertes qui attendent une décision
 
 # -- Contexte commun ------------------------------------------------------------------------
 
+LOGIN_FREE = ("teacher.choose", "teacher.pick", "teacher.code", "teacher.check_code", "teacher.api_jobs")
+
+
 @bp.before_request
 def load_teacher():
-    if request.endpoint in ("teacher.choose", "teacher.pick", "teacher.api_jobs"):
+    if request.endpoint in LOGIN_FREE:
         return None
     current = [t for t in db.teachers() if db.classes_for(t["id"])]
-    if "teacher_id" not in session or session["teacher_id"] not in {t["id"] for t in current}:
-        if len(current) != 1:
-            return redirect(url_for(".choose"))
-        session["teacher_id"] = current[0]["id"]
+    # Chaque enseignant se connecte avec son code : on ne tombe jamais sur la classe d'un autre.
+    if session.get("teacher_ok") not in {t["id"] for t in current} or session.get("teacher_id") != session.get("teacher_ok"):
+        return redirect(url_for(".choose"))
     g.teacher = next(t for t in current if t["id"] == session["teacher_id"])
     g.cls = db.classes_for(g.teacher["id"])[0]
     g.learners = db.learners_in_class(g.cls["id"])
@@ -75,13 +78,37 @@ def _job(label: str, fn, total: int = 1, back: str | None = None):
 
 @bp.get("/choisir")
 def choose():
+    for k in ("teacher_ok", "teacher_id", "teacher_pending"):
+        session.pop(k, None)
     return render_template("teacher/choose.html", teachers=[t for t in db.teachers() if db.classes_for(t["id"])])
 
 
 @bp.post("/choisir")
 def pick():
-    session["teacher_id"] = int(request.form["teacher_id"])
-    return redirect(url_for(".dashboard"))
+    session["teacher_pending"] = int(request.form["teacher_id"])
+    return redirect(url_for(".code"))
+
+
+@bp.get("/code")
+def code():
+    t = next((t for t in db.teachers() if t["id"] == session.get("teacher_pending")), None)
+    if not t:
+        return redirect(url_for(".choose"))
+    return render_template("teacher/code.html", teacher=t)
+
+
+@bp.post("/code")
+def check_code():
+    tid = session.get("teacher_pending")
+    if tid is None:
+        return redirect(url_for(".choose"))
+    if hmac.compare_digest(request.form.get("code", ""), TEACHER_PIN):
+        session.pop("teacher_pending", None)
+        session["teacher_id"] = session["teacher_ok"] = tid
+        audit.log(next(t["name"] for t in db.teachers() if t["id"] == tid), "interface", "teacher_login")
+        return redirect(url_for(".dashboard"))
+    flash(tr("Ce n'est pas le bon code. Essaie encore !"), "warn")
+    return redirect(url_for(".code"))
 
 
 @bp.get("/api/jobs")

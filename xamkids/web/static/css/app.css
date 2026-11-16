@@ -533,3 +533,8 @@ pre { background: var(--bg-soft); padding: 12px; border-radius: 10px; overflow: 
 .pro .toggles button.on::before { transform: rotate(90deg); }
 .pro .toggles button:hover, .pro .toggles button.on { color: var(--ink); }
 .pro .panel { margin-top: 10px; padding: 12px 14px; border-radius: 8px; background: var(--bg-soft); }
+
+/* Scène 3D de l'exercice */
+.scene3d { height: 300px; margin: 14px 0 4px; border-radius: 18px; background: #FFFDF8; border: 1px solid #E7E0D2; overflow: hidden; touch-action: none; }
+.scene3d canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.scene3d-help { margin: 0 0 8px; text-align: center; color: #6B7280; font-size: .9rem; }
