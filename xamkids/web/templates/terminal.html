@@ -18,14 +18,14 @@
 </head>
 <body>
   <div id="bar"><span id="dot"></span> xamkids live · the agent, its tool calls and every human decision, as they happen
-    <a href="/enseignant/">Back to the platform</a></div>
+    <a href="{{ back or '/enseignant/' }}">Back to the platform</a></div>
   <pre id="out"></pre>
   <script>
     const out = document.getElementById("out");
     let next = null;
     async function tick() {
       try {
-        const r = await fetch("/terminal/feed" + (next === null ? "" : "?after=" + next), {cache: "no-store"});
+        const r = await fetch("{{ feed or '/terminal/feed' }}" + (next === null ? "" : "?after=" + next), {cache: "no-store"});
         if (r.ok) {
           const d = await r.json();
           next = d.next;

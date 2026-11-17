@@ -163,6 +163,11 @@ def create_app() -> Flask:
         def require_access():
             if session.get("access_ok") or request.endpoint in ("access", "static"):
                 return None
+            # Le terminal déployé à part lit le flux de l'agent avec un jeton de lecture.
+            want = os.environ.get("XAMKIDS_TERMINAL_TOKEN", "")
+            if want and request.endpoint == "terminal_feed" and hmac.compare_digest(
+                    request.headers.get("X-Terminal-Token", "").encode(), want.encode()):
+                return None
             return redirect(url_for("access"))
 
         @app.route("/acces", methods=["GET", "POST"])
