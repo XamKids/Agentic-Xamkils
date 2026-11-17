@@ -130,6 +130,8 @@ def create_app() -> Flask:
     app.register_blueprint(learner.bp)
     app.register_blueprint(teacher.bp)
     app.register_blueprint(voice.bp)
+    from . import terminal
+    terminal.register(app)
 
     app.jinja_env.finalize = _spell_terms  # « 2024-2025 T3 » → « 2024-2025, trimestre 3 » partout dans l'interface
     app.jinja_env.filters.update(

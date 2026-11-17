@@ -163,6 +163,43 @@ def show_run(r: dict, names: dict) -> None:
                   f" · {escape(TRIGGERS.get(r['trigger'], r['trigger'] or ''))} · [{style}]{escape(_plain(text))}[/]")
 
 
+def initial_state(history: int = 0) -> dict:
+    """Point de départ du suivi : on ne montre que ce qui arrive après, plus les `history` derniers appels."""
+    last_audit = (_query(AUDIT_DB, "SELECT MAX(id) AS m FROM audit_log") or [{"m": 0}])[0]["m"] or 0
+    return {"last_audit": max(0, last_audit - history),
+            "trace_pos": TRACE_FILE.stat().st_size if TRACE_FILE.exists() else 0,
+            "run_state": {r["thread_id"]: r["status"] for r in _query(AGENT_DB, "SELECT thread_id, status FROM runs")}}
+
+
+def new_events(state: dict) -> list:
+    """Événements apparus depuis le dernier appel : (horodatage, ordre, type, données), dans l'ordre où ils se sont produits."""
+    events = []
+    for e in _query(AUDIT_DB, "SELECT * FROM audit_log WHERE id > ? ORDER BY id", (state["last_audit"],)):
+        state["last_audit"] = e["id"]
+        events.append((e["ts"], 0, "call", e))
+    if TRACE_FILE.exists() and TRACE_FILE.stat().st_size > state["trace_pos"]:
+        with TRACE_FILE.open(encoding="utf-8") as f:
+            f.seek(state["trace_pos"])
+            chunk = f.read()
+            state["trace_pos"] = f.tell()
+        for line in chunk.splitlines():
+            try:
+                st = json.loads(line)
+                events.append((st["ts"], 1, "step", st))
+            except (json.JSONDecodeError, KeyError):
+                pass
+    for r in _query(AGENT_DB, "SELECT * FROM runs"):
+        if state["run_state"].get(r["thread_id"]) != r["status"]:
+            state["run_state"][r["thread_id"]] = r["status"]
+            events.append((r["updated_at"] or "", 2, "run", r))
+    return events
+
+
+def show_event(kind: str, d: dict, names: dict, details: bool) -> None:
+    {"call": lambda: show_call(d, names, details), "step": lambda: show_step(d, names),
+     "run": lambda: show_run(d, names)}[kind]()
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=tr("Suivre l'agent XamKids en direct."))
     ap.add_argument("--details", action="store_true", help=tr("afficher les sorties de chaque outil"))
@@ -171,10 +208,7 @@ def main() -> None:
                     help=tr("réafficher les N derniers appels avant de suivre"))
     a = ap.parse_args()
 
-    last_audit = (_query(AUDIT_DB, "SELECT MAX(id) AS m FROM audit_log") or [{"m": 0}])[0]["m"] or 0
-    last_audit = max(0, last_audit - a.historique)
-    trace_pos = TRACE_FILE.stat().st_size if TRACE_FILE.exists() else 0
-    run_state = {r["thread_id"]: r["status"] for r in _query(AGENT_DB, "SELECT thread_id, status FROM runs")}
+    state = initial_state(a.historique)
     names = _names()
 
     console.print()
@@ -195,25 +229,7 @@ def main() -> None:
     blink = 0
     try:
         while True:
-            events = []  # (horodatage, ordre, type, données) : affichés dans l'ordre où ils se sont produits
-            for e in _query(AUDIT_DB, "SELECT * FROM audit_log WHERE id > ? ORDER BY id", (last_audit,)):
-                last_audit = e["id"]
-                events.append((e["ts"], 0, "call", e))
-            if TRACE_FILE.exists() and TRACE_FILE.stat().st_size > trace_pos:
-                with TRACE_FILE.open(encoding="utf-8") as f:
-                    f.seek(trace_pos)
-                    chunk = f.read()
-                    trace_pos = f.tell()
-                for line in chunk.splitlines():
-                    try:
-                        s = json.loads(line)
-                        events.append((s["ts"], 1, "step", s))
-                    except (json.JSONDecodeError, KeyError):
-                        pass
-            for r in _query(AGENT_DB, "SELECT * FROM runs"):
-                if run_state.get(r["thread_id"]) != r["status"]:
-                    run_state[r["thread_id"]] = r["status"]
-                    events.append((r["updated_at"] or "", 2, "run", r))
+            events = new_events(state)
             # Point qui clignote tant qu'une exécution de l'agent est en cours.
             busy = [r for r in _query(AGENT_DB, "SELECT learner_id FROM runs WHERE status = 'running'")
                     if not a.eleve or r["learner_id"] in (a.eleve, None)]

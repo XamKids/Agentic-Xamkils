@@ -18,6 +18,7 @@
            {% elif endpoint == 'teacher.alerts' and n_news %}<span class="count">{{ n_news }}</span>{% endif %}</a>
       {% endfor %}
     {% endfor %}
+    <a class="nav" href="{{ url_for('terminal') }}" target="_blank">{{ _("Terminal en direct") }}</a>
     <div class="group"></div>
     <a class="nav" href="{{ url_for('teacher.logout') }}">{{ _("Se déconnecter") }}</a>
   </aside>

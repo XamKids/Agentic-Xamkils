@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XamKids Terminal</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #0d1117; }
+    #bar { position: fixed; top: 0; left: 0; right: 0; height: 34px; display: flex; align-items: center; gap: 10px;
+           padding: 0 14px; background: #161b22; color: #8b949e; font: 13px -apple-system, system-ui, sans-serif;
+           border-bottom: 1px solid #30363d; }
+    #dot { width: 9px; height: 9px; border-radius: 50%; background: #3fb950; animation: b 1.2s infinite; }
+    @keyframes b { 50% { opacity: .25; } }
+    #bar a { margin-left: auto; color: #58a6ff; text-decoration: none; }
+    pre { margin: 0; padding: 48px 16px 24px; color: #c9d1d9; font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace;
+          white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+  <div id="bar"><span id="dot"></span> xamkids live · the agent, its tool calls and every human decision, as they happen
+    <a href="/enseignant/">Back to the platform</a></div>
+  <pre id="out"></pre>
+  <script>
+    const out = document.getElementById("out");
+    let next = null;
+    async function tick() {
+      try {
+        const r = await fetch("/terminal/feed" + (next === null ? "" : "?after=" + next), {cache: "no-store"});
+        if (r.ok) {
+          const d = await r.json();
+          next = d.next;
+          if (d.html) {
+            const stick = innerHeight + scrollY >= document.body.scrollHeight - 80;
+            out.insertAdjacentHTML("beforeend", d.html);
+            if (stick) scrollTo(0, document.body.scrollHeight);
+          }
+        }
+      } catch (e) {}
+      setTimeout(tick, 1000);
+    }
+    tick();
+  </script>
+</body>
+</html>
