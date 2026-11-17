@@ -6,11 +6,13 @@ import html
 import os
 import re
 import secrets
+import shutil
+from pathlib import Path
 
 from flask import Flask, redirect, render_template, request, session, url_for
 from markupsafe import Markup
 
-from ..config import CURRENT_TERM, CURRENT_YEAR, DATA_DIR, RECORDS_DB
+from ..config import AUDIT_DB, CURRENT_TERM, CURRENT_YEAR, DATA_DIR, RECORDS_DB
 from ..i18n import LANG, tr
 from ..knowledge import domain_label, short_label
 from ..records import db
@@ -111,8 +113,16 @@ def create_app() -> Flask:
     app.secret_key = _secret_key()
     app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
     if not RECORDS_DB.exists():
-        from ..records import seed
-        seed.seed()
+        # Mise en ligne : on repart des dossiers et du journal déjà constitués (classe fictive, historique, analyses, tests)
+        snap = Path(__file__).resolve().parents[2] / "demo_data"
+        if (snap / "xamkids.db").exists():
+            RECORDS_DB.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(snap / "xamkids.db", RECORDS_DB)
+            if (snap / "audit.db").exists() and not AUDIT_DB.exists():
+                shutil.copy(snap / "audit.db", AUDIT_DB)
+        else:
+            from ..records import seed
+            seed.seed()
     db.init()  # migrations éventuelles
     _start_followup_clock()
 
@@ -145,6 +155,7 @@ def create_app() -> Flask:
     # Mise en ligne : un code d'accès protège toute la plateforme (variable XAMKIDS_ACCESS_CODE).
     # Sans cette variable (installation dans une école, sur un poste local), rien ne change.
     access_code = os.environ.get("XAMKIDS_ACCESS_CODE", "")
+    access_user = os.environ.get("XAMKIDS_ACCESS_USER", "xamkids").strip().lower()
     if access_code:
         @app.before_request
         def require_access():
@@ -156,7 +167,10 @@ def create_app() -> Flask:
         def access():
             wrong = False
             if request.method == "POST":
-                if hmac.compare_digest(request.form.get("code", "").strip().encode(), access_code.encode()):
+                who = request.form.get("user", "").strip().lower()
+                ok_user = who == access_user or ("@" in who and who.split("@")[0] == access_user)
+                ok_pass = hmac.compare_digest(request.form.get("code", "").strip().encode(), access_code.encode())
+                if ok_user and ok_pass:
                     session["access_ok"] = True
                     return redirect(url_for("landing"))
                 wrong = True

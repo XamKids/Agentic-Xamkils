@@ -16,3 +16,6 @@ evals/run.log
 *.mp4
 *.mov
 README.fr.local.md
+
+# Snapshot of the fictional class, history and tests loaded at the first start of the online platform
+!demo_data/
