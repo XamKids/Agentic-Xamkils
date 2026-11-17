@@ -6,14 +6,12 @@ authentifié par XAMKIDS_INTERNAL_TOKEN).
 """
 from __future__ import annotations
 
-import base64
 import hmac
-import mimetypes
 import os
 from datetime import datetime
 from pathlib import Path
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Image
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -38,11 +36,10 @@ def read_text_file(path: str) -> str:
 
 
 @mcp.tool()
-def read_media_file(path: str) -> list[dict]:
-    """Read an image or audio file and return it as base64 data with its MIME type."""
+def read_media_file(path: str) -> Image:
+    """Read an image file and return it as image content (base64 with its MIME type)."""
     p = _safe(path)
-    mime = mimetypes.guess_type(p.name)[0] or "application/octet-stream"
-    return [{"type": "image", "data": base64.b64encode(p.read_bytes()).decode(), "mimeType": mime}]
+    return Image(data=p.read_bytes(), format=p.suffix.lstrip(".").lower() or "png")
 
 
 @mcp.tool()
