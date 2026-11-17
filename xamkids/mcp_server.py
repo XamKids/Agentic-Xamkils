@@ -689,6 +689,9 @@ def main() -> None:
     port = os.environ.get("XAMKIDS_MCP_HTTP_PORT")
     if port:  # déployé dans son propre service : HTTP (adresse /mcp) au lieu de stdio
         mcp.settings.host, mcp.settings.port = "0.0.0.0", int(port)
+        from mcp.server.transport_security import TransportSecuritySettings
+        # Derrière le proxy du service d'hébergement, l'en-tête Host est celui du service : on ne le filtre pas.
+        mcp.settings.transport_security = TransportSecuritySettings(enable_dns_rebinding_protection=False)
         mcp.run(transport="streamable-http")
     else:
         mcp.run()

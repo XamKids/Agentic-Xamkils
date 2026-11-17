@@ -75,4 +75,7 @@ async def health(request: Request):
 
 if __name__ == "__main__":
     mcp.settings.host, mcp.settings.port = "0.0.0.0", int(os.environ.get("PORT", "8503"))
+    from mcp.server.transport_security import TransportSecuritySettings
+    # Derrière le proxy du service d'hébergement, l'en-tête Host est celui du service : on ne le filtre pas.
+    mcp.settings.transport_security = TransportSecuritySettings(enable_dns_rebinding_protection=False)
     mcp.run(transport="streamable-http")
