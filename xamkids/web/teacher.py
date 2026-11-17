@@ -128,11 +128,6 @@ def check_code():
     return redirect(url_for(".code"))
 
 
-@bp.get("/couts")
-def costs():
-    return render_template("teacher/costs.html")
-
-
 @bp.get("/api/jobs")
 def api_jobs():
     return jsonify([{k: j[k] for k in ("label", "status", "done", "total", "message")} for j in jobs.running()])
