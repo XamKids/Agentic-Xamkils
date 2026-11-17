@@ -1,0 +1,42 @@
+{% extends "teacher/layout.html" %}
+{% block content %}
+<h1>{{ _("Coûts") }}</h1>
+<p class="muted">{{ "What it costs to run XamKids Profile, measured on this platform. Every model is open-weight and called through OpenRouter." if LANG == "en" else "Ce que coûte XamKids Profile, mesuré sur cette plateforme. Tous les modèles sont à poids ouverts, appelés via OpenRouter." }}</p>
+
+<div class="card" style="margin-top:16px">
+  <h2 style="margin-top:0">{{ "Models" if LANG == "en" else "Modèles" }}</h2>
+  <table class="data">
+    <thead><tr><th>{{ "Task" if LANG == "en" else "Tâche" }}</th><th>{{ "Model" if LANG == "en" else "Modèle" }}</th><th>{{ "Input / million tokens" if LANG == "en" else "Entrée / million de tokens" }}</th><th>{{ "Output / million tokens" if LANG == "en" else "Sortie / million de tokens" }}</th></tr></thead>
+    <tbody>
+      <tr><td>{{ "Reasoning and planning of the agent" if LANG == "en" else "Raisonnement et planification de l'agent" }}</td><td>Llama 3.1 8B</td><td>$0.02</td><td>$0.04</td></tr>
+      <tr><td>{{ "3D scene of each exercise" if LANG == "en" else "Scène 3D de chaque exercice" }}</td><td>Qwen3-VL 30B</td><td>$0.15</td><td>$0.60</td></tr>
+      <tr><td>{{ "Reading scanned documents (OCR)" if LANG == "en" else "Lecture des documents scannés (OCR)" }}</td><td>Qwen3-VL 30B</td><td>$0.15</td><td>$0.60</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">{{ "Compared and not kept: Gemini 2.5 Flash Lite ($0.10 / $0.40), Llama 3.1 8B alone for scenes (1 valid scene out of 7)." if LANG == "en" else "Comparés et non retenus : Gemini 2.5 Flash Lite (0,10 $ / 0,40 $), Llama 3.1 8B seul pour les scènes (1 scène valide sur 7)." }}</p>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <h2 style="margin-top:0">{{ "Measured cost" if LANG == "en" else "Coût mesuré" }}</h2>
+  <table class="data">
+    <tbody>
+      <tr><td>{{ "One full analysis of a learner by the agent (measured on this platform)" if LANG == "en" else "Une analyse complète d'un élève par l'agent (mesurée sur cette plateforme)" }}</td><td><b>$0.00003</b></td></tr>
+      <tr><td>{{ "One 3D scene designed by the agent (estimate from token prices)" if LANG == "en" else "Une scène 3D conçue par l'agent (estimation à partir des prix par token)" }}</td><td><b>&lt; $0.001</b></td></tr>
+      <tr><td>{{ "All tests, comparisons and demos of the project, in total" if LANG == "en" else "Tous les tests, comparaisons et démonstrations du projet, au total" }}</td><td><b>$0.01</b></td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">{{ "A class of 30 learners analysed once costs about one tenth of a cent." if LANG == "en" else "Une classe de 30 élèves analysée une fois coûte environ un dixième de centime." }}</p>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <h2 style="margin-top:0">{{ "Hosting and options" if LANG == "en" else "Hébergement et options" }}</h2>
+  <table class="data">
+    <tbody>
+      <tr><td>{{ "Online platform and terminal (Render, free plan; sleeps after 15 min without visits)" if LANG == "en" else "Plateforme et terminal en ligne (Render, plan gratuit ; s'endort après 15 min sans visite)" }}</td><td><b>$0</b></td></tr>
+      <tr><td>{{ "Always awake (Render Starter, per service, about)" if LANG == "en" else "Toujours éveillé (Render Starter, par service, environ)" }}</td><td><b>$7 / {{ "month" if LANG == "en" else "mois" }}</b></td></tr>
+      <tr><td>{{ "Domain name (.com on AWS Route 53, about)" if LANG == "en" else "Nom de domaine (.com sur AWS Route 53, environ)" }}</td><td><b>$14 / {{ "year" if LANG == "en" else "an" }}</b></td></tr>
+      <tr><td>{{ "In a school, on one computer with Ollama: no internet, no cost per call" if LANG == "en" else "Dans une école, sur un seul ordinateur avec Ollama : sans internet, sans coût par appel" }}</td><td><b>$0</b></td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

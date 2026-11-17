@@ -60,6 +60,7 @@ EN = {
     "Code de l'enseignant": "Teacher code",
     "Changer d'enseignant": "Switch teacher",
     "Se déconnecter": "Sign out",
+    "Coûts": "Costs",
     "Terminal en direct": "Live terminal",
     "Scène en 3D de l'exercice": "3D scene of the exercise",
     "Glisse pour tourner la scène. Touche un objet pour le mettre de côté.":
