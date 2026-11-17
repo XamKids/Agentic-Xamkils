@@ -59,6 +59,7 @@ EN = {
     "Ce n'est pas moi": "That's not me",
     "Code de l'enseignant": "Teacher code",
     "Changer d'enseignant": "Switch teacher",
+    "Se déconnecter": "Sign out",
     "Scène en 3D de l'exercice": "3D scene of the exercise",
     "Glisse pour tourner la scène. Touche un objet pour le mettre de côté.":
         "Drag to turn the scene. Tap an object to set it aside.",

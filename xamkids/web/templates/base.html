@@ -13,10 +13,10 @@
   <header class="topbar">
     <div class="wrap">
       <a class="brand" href="{{ url_for('landing') }}">{{ ic.logo() }} XamKids Profile</a>
-      <nav class="switch">
+      {% if request.endpoint != 'access' %}<nav class="switch">
         <a href="{{ url_for('learner.choose') }}" class="{{ 'on' if request.blueprint == 'learner' }}">{{ _("Élève") }}</a>
         <a href="{{ url_for('teacher.dashboard') }}" class="{{ 'on' if request.blueprint == 'teacher' }}">{{ _("Enseignant·e") }}</a>
-      </nav>
+      </nav>{% endif %}
     </div>
   </header>
   {% block body %}{% endblock %}

@@ -37,7 +37,7 @@ QUESTION_KINDS = ("question", "document")  # alertes qui attendent une décision
 
 # -- Contexte commun ------------------------------------------------------------------------
 
-LOGIN_FREE = ("teacher.choose", "teacher.pick", "teacher.code", "teacher.check_code", "teacher.api_jobs")
+LOGIN_FREE = ("teacher.logout", "teacher.choose", "teacher.pick", "teacher.code", "teacher.check_code", "teacher.api_jobs")
 
 
 @bp.before_request
@@ -74,6 +74,13 @@ def layout_context():
 def _job(label: str, fn, total: int = 1, back: str | None = None):
     jobs.start(label, fn, total)
     return redirect(back or request.referrer or url_for(".dashboard"))
+
+
+@bp.get("/deconnexion")
+def logout():
+    from flask import current_app
+    session.clear()
+    return redirect(url_for("access" if "access" in current_app.view_functions else ".choose"))
 
 
 @bp.get("/choisir")

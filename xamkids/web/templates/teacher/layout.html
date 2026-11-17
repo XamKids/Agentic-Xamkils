@@ -19,7 +19,7 @@
       {% endfor %}
     {% endfor %}
     <div class="group"></div>
-    <a class="nav" href="{{ url_for('teacher.choose') }}">{{ _("Changer d'enseignant") }}</a>
+    <a class="nav" href="{{ url_for('teacher.logout') }}">{{ _("Se déconnecter") }}</a>
   </aside>
   <main class="main">
     {% for category, message in get_flashed_messages(with_categories=true) %}

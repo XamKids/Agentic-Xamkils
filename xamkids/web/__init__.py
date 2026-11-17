@@ -15,7 +15,7 @@ from markupsafe import Markup
 from ..config import AUDIT_DB, CURRENT_TERM, CURRENT_YEAR, DATA_DIR, RECORDS_DB
 from ..i18n import LANG, tr
 from ..knowledge import domain_label, short_label
-from ..records import db
+from ..records import audit, db
 
 
 def _split_hypothesis(text: str) -> dict:
@@ -172,6 +172,11 @@ def create_app() -> Flask:
                 ok_pass = hmac.compare_digest(request.form.get("code", "").strip().encode(), access_code.encode())
                 if ok_user and ok_pass:
                     session["access_ok"] = True
+                    # La connexion identifie l'enseignant : plus de page « Qui êtes-vous ? ».
+                    me = next((t for t in db.teachers() if db.classes_for(t["id"])), None)
+                    if me:
+                        session["teacher_id"] = session["teacher_ok"] = me["id"]
+                        audit.log(me["name"], "interface", "teacher_login")
                     return redirect(url_for("landing"))
                 wrong = True
             return render_template("access.html", wrong=wrong), (401 if wrong else 200)

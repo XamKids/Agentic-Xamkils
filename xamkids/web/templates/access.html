@@ -1,16 +1,16 @@
 {% extends "base.html" %}
+{% block body_class %}pro{% endblock %}
 {% block body %}
-<div style="max-width:380px;margin:12vh auto 0;padding:0 20px">
-  <h1 style="margin:0 0 8px">XamKids Profile</h1>
-  <p class="muted" style="margin:0 0 20px">{{ "Sign in." if LANG == "en" else "Connexion." }}</p>
+<main class="wrap landing">
+  <h1>{{ "Sign in" if LANG == "en" else "Connexion" }}</h1>
   {% set field = "padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;width:100%;box-sizing:border-box" %}
-  <form method="post" style="display:flex;flex-direction:column;gap:10px">
+  <form method="post" class="card" style="display:flex;flex-direction:column;gap:12px;max-width:360px;margin:22px auto 0;text-align:left">
     <input type="text" name="user" autofocus required autocomplete="username" style="{{ field }}"
            placeholder="{{ 'Username or email' if LANG == 'en' else "Nom d'utilisateur ou e-mail" }}">
     <input type="password" name="code" required autocomplete="current-password" style="{{ field }}"
            placeholder="{{ 'Password' if LANG == 'en' else 'Mot de passe' }}">
-    <button class="btn primary">{{ "Sign in" if LANG == "en" else "Se connecter" }}</button>
+    <button class="btn primary" style="justify-content:center">{{ "Sign in" if LANG == "en" else "Se connecter" }}</button>
+    {% if wrong %}<p style="color:var(--red, #B42318);margin:0">{{ "Wrong username or password." if LANG == "en" else "Identifiant ou mot de passe incorrect." }}</p>{% endif %}
   </form>
-  {% if wrong %}<p style="color:var(--red, #B42318);margin-top:12px">{{ "Wrong username or password." if LANG == "en" else "Identifiant ou mot de passe incorrect." }}</p>{% endif %}
-</div>
+</main>
 {% endblock %}
