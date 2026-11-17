@@ -9,6 +9,7 @@ import sqlite3
 from contextlib import contextmanager
 from typing import Iterator
 
+from . import remote
 from ..config import CURRENT_TERM, CURRENT_YEAR, RECORDS_DB
 from ..i18n import tr
 from ..knowledge import EXERCISE_BANK
@@ -92,6 +93,14 @@ CREATE TABLE IF NOT EXISTS documents (
 
 @contextmanager
 def connect() -> Iterator[sqlite3.Connection]:
+    if remote.ENABLED:  # serveur MCP déployé à part : la base reste dans la plateforme
+        c = remote.RemoteConnection("records")
+        try:
+            yield c
+            c.commit()
+        finally:
+            c.close()
+        return
     c = sqlite3.connect(RECORDS_DB, timeout=30)
     c.row_factory = sqlite3.Row
     c.execute("PRAGMA foreign_keys = ON")
@@ -109,6 +118,8 @@ MIGRATIONS = [("classes", "school_id", "INTEGER"), ("learners", "matricule", "TE
 
 
 def init(reset: bool = False) -> None:
+    if remote.ENABLED:
+        return
     if reset and RECORDS_DB.exists():
         RECORDS_DB.unlink()
     with connect() as c:

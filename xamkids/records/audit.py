@@ -6,6 +6,7 @@ import sqlite3
 from datetime import datetime, timezone
 from typing import Any
 
+from . import remote
 from ..config import AUDIT_DB
 from ..i18n import tr
 
@@ -29,7 +30,9 @@ def now() -> str:
     return datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
-def _conn() -> sqlite3.Connection:
+def _conn():
+    if remote.ENABLED:
+        return remote.RemoteConnection("audit")
     c = sqlite3.connect(AUDIT_DB, timeout=30)
     c.row_factory = sqlite3.Row
     c.executescript(_SCHEMA)

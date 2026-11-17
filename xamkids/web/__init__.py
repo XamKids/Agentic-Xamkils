@@ -130,8 +130,9 @@ def create_app() -> Flask:
     app.register_blueprint(learner.bp)
     app.register_blueprint(teacher.bp)
     app.register_blueprint(voice.bp)
-    from . import terminal
+    from . import internal, terminal
     terminal.register(app)
+    internal.register(app)
 
     app.jinja_env.finalize = _spell_terms  # « 2024-2025 T3 » → « 2024-2025, trimestre 3 » partout dans l'interface
     app.jinja_env.filters.update(
@@ -161,7 +162,7 @@ def create_app() -> Flask:
     if access_code:
         @app.before_request
         def require_access():
-            if session.get("access_ok") or request.endpoint in ("access", "static"):
+            if session.get("access_ok") or request.endpoint in ("access", "static", "internal_db"):
                 return None
             # Le terminal déployé à part lit le flux de l'agent avec un jeton de lecture.
             want = os.environ.get("XAMKIDS_TERMINAL_TOKEN", "")

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import functools
 import json
+import os
 import unicodedata
 import uuid
 from collections import Counter, defaultdict
@@ -685,7 +686,12 @@ def learner_situation(learner_id: str) -> str:
 
 def main() -> None:
     db.init()
-    mcp.run()
+    port = os.environ.get("XAMKIDS_MCP_HTTP_PORT")
+    if port:  # déployé dans son propre service : HTTP (adresse /mcp) au lieu de stdio
+        mcp.settings.host, mcp.settings.port = "0.0.0.0", int(port)
+        mcp.run(transport="streamable-http")
+    else:
+        mcp.run()
 
 
 if __name__ == "__main__":

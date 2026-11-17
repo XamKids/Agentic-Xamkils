@@ -598,6 +598,14 @@ def upload():
         return redirect(url_for(".documents"))
     name = f"{int(time.time())}_{file.filename.replace('/', '_')}"
     file.save(UPLOAD_DIR / name)
+    fs_url = os.environ.get("XAMKIDS_FS_UPLOAD_URL")
+    if fs_url:  # serveur Filesystem déployé à part : on y dépose le document pour que l'agent puisse le lire
+        import httpx
+        try:
+            httpx.put(f"{fs_url.rstrip('/')}/files/{name}", content=(UPLOAD_DIR / name).read_bytes(), timeout=60,
+                      headers={"X-Internal-Token": os.environ.get("XAMKIDS_INTERNAL_TOKEN", "")}).raise_for_status()
+        except httpx.HTTPError:
+            flash(tr("Le serveur Filesystem ne répond pas : le document ne pourra pas être lu pour l'instant."), "warn")
     kind = "livret" if request.form.get("kind") == "livret" else "registre"
     document = {"document_id": decisions.register_document(name, g.teacher["name"], g.cls["id"]),
                 "filename": name, "class_id": g.cls["id"], "kind": kind}

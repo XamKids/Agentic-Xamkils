@@ -54,7 +54,24 @@ class Toolkit:
         self.unavailable: dict[str, str] = {}
         self._stack = AsyncExitStack()
 
+    async def _wake(self) -> None:
+        """Serveurs MCP déployés à part sur un plan gratuit : on les réveille tous en même temps avant de s'y connecter."""
+        import asyncio
+        import httpx
+        urls = [c["url"].rsplit("/mcp", 1)[0] + "/health" for c in self.connections.values() if c.get("url")]
+        if not urls:
+            return
+
+        async def ping(url: str) -> None:
+            try:
+                async with httpx.AsyncClient(timeout=120) as http:
+                    await http.get(url)
+            except httpx.HTTPError:
+                pass
+        await asyncio.gather(*(ping(u) for u in urls))
+
     async def __aenter__(self) -> "Toolkit":
+        await self._wake()
         for name in self.connections:
             try:
                 session = await self._stack.enter_async_context(self.client.session(name))
