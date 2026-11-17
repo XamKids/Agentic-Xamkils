@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import os
 from contextlib import AsyncExitStack
 from typing import Any
 
@@ -32,6 +33,12 @@ def server_connections() -> dict[str, dict]:
     if NPX:
         connections["filesystem"] = {"transport": "stdio", "command": NPX, "env": env,
                                      "args": ["-y", "@modelcontextprotocol/server-filesystem", str(UPLOAD_DIR)]}
+    # Un serveur MCP peut tourner dans son propre service : XAMKIDS_MCP_RUN_PYTHON_URL, XAMKIDS_MCP_FILESYSTEM_URL…
+    # (adresse terminée par /mcp). Sans la variable, il est lancé en local comme avant.
+    for name in list(connections) + ["filesystem"]:
+        url = os.environ.get("XAMKIDS_MCP_" + name.replace("-", "_").upper() + "_URL")
+        if url:
+            connections[name] = {"transport": "streamable_http", "url": url}
     return connections
 
 

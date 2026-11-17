@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hmac
 import json
+import os
 import re
 import time
 
@@ -45,6 +46,10 @@ def load_teacher():
     if request.endpoint in LOGIN_FREE:
         return None
     current = [t for t in db.teachers() if db.classes_for(t["id"])]
+    if not os.environ.get("XAMKIDS_ACCESS_CODE") and current and session.get("teacher_ok") not in {t["id"] for t in current}:
+        # En local (poste de l'école) : ni connexion ni « Qui êtes-vous ? », on entre directement dans la classe.
+        me = next((t for t in current if t["id"] == 6), current[0])
+        session["teacher_id"] = session["teacher_ok"] = me["id"]
     # Chaque enseignant se connecte avec son code : on ne tombe jamais sur la classe d'un autre.
     if session.get("teacher_ok") not in {t["id"] for t in current} or session.get("teacher_id") != session.get("teacher_ok"):
         return redirect(url_for(".choose"))
@@ -64,7 +69,7 @@ def layout_context():
     pending = len({e["thread_id"] for e in db.pending_exercises(g.teacher["id"])}) + len(db.pending_summaries(g.teacher["id"]))
     school = db.row("SELECT * FROM schools WHERE id = ?", (g.cls["school_id"],))
     open_alerts = db.alerts(teacher_id=g.teacher["id"], status="open")
-    return {"teacher": g.teacher, "cls": g.cls, "school": school, "names": g.names, "running_jobs": jobs.running(),
+    return {"hosted": bool(os.environ.get("XAMKIDS_ACCESS_CODE")), "teacher": g.teacher, "cls": g.cls, "school": school, "names": g.names, "running_jobs": jobs.running(),
             "n_alerts": sum(a["kind"] in QUESTION_KINDS for a in open_alerts),
             "n_news": len({a.get("finding_id") or f"a{a['id']}" for a in open_alerts if a["kind"] not in QUESTION_KINDS}),
             "n_pending": pending,
@@ -92,7 +97,12 @@ def choose():
 
 @bp.post("/choisir")
 def pick():
-    session["teacher_pending"] = int(request.form["teacher_id"])
+    tid = int(request.form["teacher_id"])
+    if not os.environ.get("XAMKIDS_ACCESS_CODE"):
+        # En local (poste de l'école), pas de connexion : on choisit son nom et on entre.
+        session["teacher_id"] = session["teacher_ok"] = tid
+        return redirect(url_for(".dashboard"))
+    session["teacher_pending"] = tid
     return redirect(url_for(".code"))
 
 

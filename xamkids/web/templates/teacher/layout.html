@@ -19,8 +19,8 @@
       {% endfor %}
     {% endfor %}
     <a class="nav" href="{{ url_for('terminal') }}" target="_blank">{{ _("Terminal en direct") }}</a>
-    <div class="group"></div>
-    <a class="nav" href="{{ url_for('teacher.logout') }}">{{ _("Se déconnecter") }}</a>
+    {% if hosted %}<div class="group"></div>
+    <a class="nav" href="{{ url_for('teacher.logout') }}">{{ _("Se déconnecter") }}</a>{% endif %}
   </aside>
   <main class="main">
     {% for category, message in get_flashed_messages(with_categories=true) %}
